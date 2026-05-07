@@ -1444,7 +1444,6 @@ function enviarCobrancaWhatsApp(idx){
     ? "🔔 Identificamos em nosso sistema que sua mensalidade ainda não foi quitada. Pedimos, por gentileza, que realize o pagamento até a data de vencimento." 
     : "✅ Agradecemos o pagamento!"; 
   
-  // Mensagem atualizada com os dados da Academia Evolução do Corpo
   let msg = `🏋️ *ACADEMIA EVOLUÇÃO DO CORPO*\n\nOlá, *${aluno.nome}*! Tudo bem? 💪\n\n📆 *Referente à mensalidade de ${mesNome}/${anoAtual}*\n💰 *Valor:* R$ ${valorMensalidade.toFixed(2).replace('.',',')}\n📊 *Status:* ${statusTexto}`; 
   
   if(!pago && dataPag) msg += `\n📅 *Vencimento:* ${dataPag}`; 
@@ -1455,13 +1454,16 @@ function enviarCobrancaWhatsApp(idx){
   const numeroLimpo = num.replace(/\s/g, '');
   const linkWhatsApp = `https://wa.me/${numeroLimpo}?text=${msgCodificada}`;
   
-  // ENVIANDO O LINK PARA O KODULAR ATRAVÉS DO WebViewString
+  // 1. Tenta enviar para o Kodular (se os blocos estiverem certos)
   if (typeof window.AppInventor !== 'undefined') {
     window.AppInventor.setWebViewString(linkWhatsApp);
-    showToast(`💬 Abrindo WhatsApp...`, 'info', 2000);
-  } else {
-    // Se for aberto pelo link do GitHub (navegador normal), abre direto
-    window.open(linkWhatsApp, '_blank'); 
+  }
+  
+  // 2. MÉTODO INFALÍVEL: Pergunta para o usuário se ele quer abrir
+  // Isso ignora o bloqueio do aplicativo e força o celular a abrir o WhatsApp
+  if (confirm("Deseja abrir o WhatsApp agora para enviar a cobrança?")) {
+    // Muda o location da página inteira. O Android vai reconhecer o wa.me e perguntar qual app abrir
+    window.location.href = linkWhatsApp;
   }
 }
 
