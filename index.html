@@ -1418,34 +1418,51 @@ function atualizarDataPagamento(idx, mes, valor){ salvarDataPagamento(alunos[idx
 
 function enviarCobrancaWhatsApp(idx){ 
   const aluno = alunos[idx]; 
-  if(!aluno.whatsapp){ showToast(`⚠️ ${aluno.nome} sem WhatsApp!`, 'warning'); return; } 
+  
+  if(!aluno.whatsapp){ 
+    showToast(`⚠️ ${aluno.nome} sem WhatsApp!`, 'warning'); 
+    return; 
+  } 
+  
   let num = aluno.whatsapp.replace(/\D/g,''); 
   if(!num.startsWith('55')) num = '55' + num; 
-  if(num.length < 12 || num.length > 13){ showToast('❌ Número inválido! Use: DDD + 9 dígitos (ex: 11912345678)', 'error'); return; } 
+  
+  if(num.length < 12 || num.length > 13){ 
+    showToast('❌ Número inválido! Cadastre com DDD + 9 dígitos', 'error'); 
+    return; 
+  } 
+  
   const mesAtual = new Date().getMonth(); 
   const anoAtual = new Date().getFullYear(); 
   const mesNome = CONFIG.MESES[mesAtual]; 
   const pago = aluno.meses[mesAtual]?.pago; 
   const dataPag = obterDataPagamentoFormatada(aluno, mesAtual); 
   const dataInicioFormatada = aluno.dataInicio ? aluno.dataInicio.split('-').reverse().join('/') : "não informada"; 
-  const statusTexto = pago ? "✅ PAGO" : "❌ *Pendente*"; 
-  // NOVA MENSAGEM DE COBRANÇA PERSONALIZADA
-  const aviso = !pago ? "Sua mensalidade ainda não foi registrada como paga. Realize o pagamento para continuar treinando!" : "✅ Agradecemos o pagamento!"; 
   
-  let msg = `🏋️ *${CONFIG.NOME_ACADEMIA.toUpperCase()}*
-
-Olá, *${aluno.nome}*! Tudo bem? ${CONFIG.EMOJI}
-
-📆 *Referente à mensalidade de ${mesNome}/${anoAtual}*
-💰 *Valor:* R$ ${valorMensalidade.toFixed(2).replace('.',',')}
-📊 *Status:* ${statusTexto}
-`; 
-  if(!pago && dataPag) msg += `📅 *Vencimento:* ${dataPag}\n`; 
-  msg += `\n${aviso}\n\n💳 *Formas de pagamento:*\n• PIX (CNPJ): ${CONFIG.PIX_CHAVE}\n• Dinheiro (diretamente na academia)\n• Transferência bancária (consulte-nos)\n\n✨ Após o pagamento, envie o comprovante para que possamos atualizar seu cadastro.\n\n📅 *Início das atividades:* ${dataInicioFormatada}\n${CONFIG.EMOJI} *${CONFIG.NOME_ACADEMIA} – ${CONFIG.SLOGAN}*`; 
+  const statusTexto = pago ? "✅ PAGO" : "❌ *Pendente*"; 
+  const aviso = !pago 
+    ? "🔔 Identificamos em nosso sistema que sua mensalidade ainda não foi quitada. Pedimos, por gentileza, que realize o pagamento até a data de vencimento." 
+    : "✅ Agradecemos o pagamento!"; 
+  
+  // Mensagem atualizada com os dados da Academia Evolução do Corpo
+  let msg = `🏋️ *ACADEMIA EVOLUÇÃO DO CORPO*\n\nOlá, *${aluno.nome}*! Tudo bem? 💪\n\n📆 *Referente à mensalidade de ${mesNome}/${anoAtual}*\n💰 *Valor:* R$ ${valorMensalidade.toFixed(2).replace('.',',')}\n📊 *Status:* ${statusTexto}`; 
+  
+  if(!pago && dataPag) msg += `\n📅 *Vencimento:* ${dataPag}`; 
+  
+  msg += `\n\n${aviso}\n\n💳 *Formas de pagamento:*\n• PIX: ${CONFIG.PIX_CHAVE}\n• Dinheiro (diretamente na academia)\n• Transferência bancária (consulte-nos)\n\n✨ Após o pagamento, envie o comprovante para que possamos atualizar seu cadastro.\n\n📅 *Início das atividades:* ${dataInicioFormatada}\n💪 *Academia Evolução do Corpo – Força • Disciplina • Transformação*`; 
   
   const msgCodificada = encodeURIComponent(msg);
-  window.open(`https://wa.me/${num}?text=${msgCodificada}`, '_blank'); 
-  showToast(`💬 Abrindo WhatsApp para ${aluno.nome}...`, 'info', 2000); 
+  const numeroLimpo = num.replace(/\s/g, '');
+  const linkWhatsApp = `https://wa.me/${numeroLimpo}?text=${msgCodificada}`;
+  
+  // ENVIANDO O LINK PARA O KODULAR ATRAVÉS DO WebViewString
+  if (typeof window.AppInventor !== 'undefined') {
+    window.AppInventor.setWebViewString(linkWhatsApp);
+    showToast(`💬 Abrindo WhatsApp...`, 'info', 2000);
+  } else {
+    // Se for aberto pelo link do GitHub (navegador normal), abre direto
+    window.open(linkWhatsApp, '_blank'); 
+  }
 }
 
 function marcarTodosPagos(mes){ if(!confirm(`✅ Marcar TODOS os ${alunos.length} alunos como PAGOS em ${CONFIG.MESES[mes]}?`)) return; let cont=0; alunos.forEach(aluno=>{ if(!aluno.meses[mes].pago){ aluno.meses[mes].pago=true; cont++; } }); salvar(); renderizarTabela(); showToast(`🎉 ${cont} aluno(s) pagos em ${CONFIG.MESES_CURTOS[mes]}!`, 'success'); }
