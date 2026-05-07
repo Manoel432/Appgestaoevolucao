@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Academia Evolução do Corpo | Controle de Mensalidades</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="icon" href="logo.png" type="image/png">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      /* 🎨 CORES PERSONALIZÁVEIS */
+      --primary-color: #2563eb;
+      --primary-color-dark: #1d4ed8;
+      --primary-color-light: #60a5fa;
+      --accent-color: #f59e0b;
+      --accent-color-dark: #d97706;
+      --accent-color-light: #fbbf24;
+      
+      --bg-dark: #0a0f1a;
+      --bg-card: rgba(15, 25, 35, 0.92);
+      --bg-input: rgba(10, 20, 28, 0.95);
+      --text-white: #ffffff;
+      --text-offwhite: #f5f5f5;
+      --text-accent: #fcd34d;
+      --text-gray: #b0bec5;
+      --border-glow: rgba(245, 158, 11, 0.3);
+      --shadow-lg: 0 25px 45px rgba(0, 0, 0, 0.5);
+      --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.3);
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --success-green: #2ecc71;
+      --success-green-dark: #27ae60;
+      --warning-orange: #f39c12;
+      --danger-red: #e74c3c;
+      --whatsapp-green: #25D366;
+      --overlay: rgba(0, 0, 0, 0.6);
+      
+      --border-radius-lg: 1.5rem;
+      --border-radius-md: 1rem;
+      --border-radius-sm: 0.75rem;
+      --border-radius-pill: 50px;
+      --font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    [data-theme="light"] {
+      --bg-dark: #f8fafc;
+      --bg-card: rgba(255, 255, 255, 0.95);
+      --bg-input: #ffffff;
+      --text-white: #1e293b;
+      --text-offwhite: #334155;
+      --text-accent: #b45309;
+      --text-gray: #64748b;
+      --border-glow: rgba(180, 83, 9, 0.2);
+      --shadow-lg: 0 25px 45px rgba(0, 0, 0, 0.15);
+      --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.1);
+      --overlay: rgba(0, 0, 0, 0.4);
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--bg-dark) 0%, #0c1a24 50%, var(--bg-dark) 100%);
+      position: relative;
+      overflow-x: hidden;
+      padding: 16px;
+      font-family: var(--font-family);
+      color: var(--text-offwhite);
+      transition: var(--transition);
+    }
+
+    /* 🖼️ WATERMARK */
+    .watermark {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0.04;
+    }
+    .watermark-logo {
+      text-align: center;
+      transform: rotate(-8deg) scale(1.5);
+      user-select: none;
+    }
+    .watermark-logo-img {
+      max-width: 200px;
+      max-height: 200px;
+      opacity: 0.3;
+      filter: grayscale(30%);
+    }
+    .watermark-logo-text {
+      font-size: clamp(2.5rem, 10vw, 6rem);
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      background: linear-gradient(135deg, var(--accent-color), var(--primary-color-light));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      line-height: 1.1;
+    }
+    .watermark-logo-subtext {
+      font-size: clamp(1.5rem, 6vw, 3rem);
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-color-dark));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-top: -8px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(circle at 30% 20%, rgba(37, 99, 235, 0.06), transparent 60%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .dashboard {
+      max-width: 1500px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-lg), 0 0 0 1px var(--border-glow);
+      overflow: hidden;
+      position: relative;
+      z-index: 20;
+      transition: var(--transition);
+    }
+
+    .hero {
+      background: linear-gradient(115deg, var(--primary-color-dark) 0%, var(--primary-color) 30%, #1a2a3a 100%);
+      padding: 1.2rem 1.8rem;
+      border-bottom: 3px solid var(--accent-color);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+    .hero::after {
+      content: "💪";
+      position: absolute;
+      right: 25px;
+      bottom: -15px;
+      font-size: 90px;
+      opacity: 0.08;
+      pointer-events: none;
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+    .hero h1 {
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      font-weight: 800;
+      font-family: 'Times New Roman', Times, serif;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      margin-bottom: 8px;
+    }
+    .hero-sub {
+      font-size: 0.9rem;
+      font-style: italic;
+      color: rgba(255,255,240,0.9);
+      letter-spacing: 1px;
+      font-family: 'Times New Roman', Times, serif;
+    }
+    .hero h1 span {
+      background: rgba(0, 0, 0, 0.35);
+      padding: 5px 16px;
+      border-radius: var(--border-radius-pill);
+      font-size: 0.8rem;
+      font-weight: 600;
+      backdrop-filter: blur(4px);
+      color: var(--accent-color);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      font-family: var(--font-family);
+    }
+
+    .finances-panel {
+      background: rgba(0, 0, 0, 0.35);
+      margin: 1.2rem 1.5rem;
+      padding: 1rem 1.5rem;
+      border-radius: var(--border-radius-md);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-glow);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .finance-control {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .monthly-fee-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(46, 204, 113, 0.05));
+      padding: 5px 12px;
+      border-radius: var(--border-radius-pill);
+      border: 1px solid rgba(46, 204, 113, 0.4);
+    }
+    .monthly-fee-box label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--accent-color);
+    }
+    .monthly-fee-box input {
+      background: var(--bg-input);
+      border: 1.5px solid rgba(46, 204, 113, 0.5);
+      padding: 5px 10px;
+      border-radius: 40px;
+      color: white;
+      font-weight: 700;
+      font-size: 0.85rem;
+      width: 85px;
+      text-align: center;
+      outline: none;
+      transition: var(--transition);
+    }
+    .monthly-fee-box input:focus {
+      border-color: var(--success-green);
+      box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.3);
+    }
+
+    .profit-card {
+      background: linear-gradient(135deg, #1a3a5a, #0e2a4a);
+      padding: 7px 18px;
+      border-radius: var(--border-radius-pill);
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      border: 1px solid var(--accent-color);
+      min-width: 220px;
+    }
+    .profit-card span:first-child {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--accent-color-light);
+      letter-spacing: 0.8px;
+    }
+    .profit-card span:last-child {
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: var(--accent-color);
+    }
+
+    .btn-small {
+      background: linear-gradient(135deg, var(--success-green), var(--success-green-dark));
+      color: white;
+      border: none;
+      padding: 5px 14px;
+      border-radius: var(--border-radius-pill);
+      font-weight: 700;
+      font-size: 0.68rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-small:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(46, 204, 113, 0.45);
+    }
+    .btn-small:active { transform: translateY(0); }
+
+    .card-panel {
+      background: rgba(0, 0, 0, 0.35);
+      margin: 0 1.5rem 1.2rem 1.5rem;
+      padding: 1.2rem 1.6rem;
+      border-radius: var(--border-radius-md);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-glow);
+      transition: var(--transition);
+    }
+    .card-panel:hover {
+      border-color: rgba(245, 158, 11, 0.55);
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.12);
+    }
+
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: flex-end;
+    }
+
+    .input-group {
+      flex: 2;
+      min-width: 180px;
+    }
+    .input-group label {
+      display: block;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      color: var(--accent-color);
+      margin-bottom: 5px;
+    }
+    .input-group input, .input-group select {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1.5px solid rgba(245, 158, 11, 0.45);
+      padding: 11px 15px;
+      border-radius: var(--border-radius-pill);
+      color: var(--text-offwhite);
+      font-weight: 500;
+      font-size: 0.88rem;
+      outline: none;
+      transition: var(--transition);
+    }
+    .input-group input:focus, .input-group select:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.28);
+    }
+
+    .search-group input {
+      padding-left: 46px !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23f59e0b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 18px center;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      flex: 1;
+      min-width: 200px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      padding: 11px 20px;
+      border-radius: var(--border-radius-pill);
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      flex: 1;
+      min-width: 110px;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-color-dark));
+      color: white;
+    }
+    .btn-primary:hover { box-shadow: 0 8px 28px rgba(37, 99, 235, 0.55); }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #2c3e50, #1e2f3a);
+      color: var(--accent-color);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+    }
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #3a5068, #2c3e50);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+
+    .btn-whatsapp {
+      background: linear-gradient(135deg, var(--whatsapp-green), #128C7E);
+      color: white;
+    }
+    .btn-whatsapp:hover { box-shadow: 0 8px 28px rgba(37, 211, 102, 0.45); }
+
+    .btn-backup {
+      background: linear-gradient(135deg, #8e44ad, #6c3483);
+      color: white;
+    }
+    .btn-backup:hover { box-shadow: 0 8px 28px rgba(142, 68, 173, 0.45); }
+
+    .btn-theme {
+      background: linear-gradient(135deg, #34495e, #2c3e50);
+      color: var(--accent-color);
+      border: 1px solid var(--border-glow);
+      min-width: auto;
+      flex: 0;
+      padding: 11px 14px;
+    }
+
+    .search-info {
+      margin-top: 14px;
+      font-size: 0.78rem;
+      color: var(--text-accent);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 4px 11px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      background: transparent;
+      color: var(--text-gray);
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 600;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background: rgba(245, 158, 11, 0.18);
+      border-color: var(--accent-color);
+      color: var(--accent-color);
+    }
+
+    .clear-search {
+      background: rgba(245, 158, 11, 0.18);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      padding: 5px 14px;
+      border-radius: 30px;
+      color: var(--accent-color);
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .clear-search:hover {
+      background: rgba(245, 158, 11, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .table-wrapper {
+      margin: 0.8rem 1.3rem 1.8rem 1.3rem;
+      overflow-x: auto;
+      overflow-y: hidden;
+      border-radius: var(--border-radius-md);
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.4rem;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+    }
+    
+    .table-wrapper::after {
+      content: "← → Deslize para ver todos os meses";
+      display: none;
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--accent-color);
+      opacity: 0.7;
+      margin-top: 8px;
+      padding: 4px;
+    }
+    
+    @media (max-width: 768px) {
+      .table-wrapper::after { display: block; }
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.73rem;
+      min-width: 1400px;
+    }
+
+    th {
+      background: linear-gradient(135deg, #1a2a3a, #152434);
+      color: var(--accent-color);
+      padding: 11px 5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      border-bottom: 2px solid var(--primary-color);
+      font-size: 0.68rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      white-space: nowrap;
+    }
+
+    td {
+      background: rgba(22, 32, 50, 0.88);
+      padding: 9px 4px;
+      text-align: center;
+      border-bottom: 1px solid rgba(245, 158, 11, 0.18);
+      color: var(--text-offwhite);
+      white-space: nowrap;
+    }
+
+    .aluno-info {
+      font-weight: 800;
+      background: linear-gradient(135deg, #1e2e4a, #1a2a44);
+      position: sticky;
+      left: 0;
+      z-index: 5;
+      text-align: left;
+      padding-left: 11px;
+      font-size: 0.83rem;
+      color: var(--accent-color-light);
+      border-right: 1px solid rgba(245, 158, 11, 0.25);
+      min-width: 200px;
+      max-width: 220px;
+    }
+    .aluno-detail {
+      font-size: 0.68rem;
+      color: var(--text-gray);
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+
+    .payment-date input {
+      width: 70px;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1.5px solid rgba(245, 158, 11, 0.45);
+      border-radius: 28px;
+      padding: 5px 0;
+      text-align: center;
+      color: var(--accent-color);
+      font-weight: 700;
+      font-size: 0.7rem;
+      transition: var(--transition);
+    }
+    .payment-date input:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.3);
+    }
+    .payment-date input.overdue {
+      border-color: var(--danger-red);
+      background: rgba(231, 76, 60, 0.15);
+      color: #ff9999;
+    }
+    .payment-date input.placeholder {
+      color: var(--text-gray);
+      opacity: 0.6;
+    }
+
+    input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      transform: scale(1.1);
+      accent-color: var(--primary-color);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    input[type="checkbox"]:checked {
+      accent-color: var(--success-green);
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+    .actions button {
+      background: linear-gradient(135deg, #a13f1f, #8b2a1a);
+      border: none;
+      padding: 5px 8px;
+      border-radius: 25px;
+      font-weight: 700;
+      font-size: 0.6rem;
+      color: white;
+      cursor: pointer;
+      transition: var(--transition);
+      min-width: 70px;
+      width: 100%;
+      max-width: 90px;
+    }
+    .actions button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .actions .whatsapp-btn {
+      background: linear-gradient(135deg, var(--whatsapp-green), #128C7E) !important;
+    }
+    .actions .edit-btn {
+      background: linear-gradient(135deg, #3498db, #2980b9) !important;
+    }
+    .actions .delete-btn {
+      background: linear-gradient(135deg, #c0392b, #a93226) !important;
+    }
+
+    .no-results td {
+      text-align: center;
+      padding: 60px 20px;
+      font-style: italic;
+      color: var(--text-accent);
+      background: rgba(0, 0, 0, 0.25);
+      font-size: 0.9rem;
+    }
+
+    .month-summary {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(0, 0, 0, 0.2));
+      padding: 10px 15px;
+      border-radius: var(--border-radius-sm);
+      margin-bottom: 8px;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+    .month-summary-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .month-summary-title {
+      color: var(--accent-color);
+      font-weight: 800;
+      font-size: 0.85rem;
+    }
+    .progress-bar {
+      flex: 1;
+      max-width: 280px;
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 20px;
+      overflow: hidden;
+      height: 9px;
+      position: relative;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--success-green), var(--success-green-dark));
+      border-radius: 20px;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+    @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+    
+    .progress-text {
+      color: var(--text-accent);
+      font-weight: 700;
+      font-size: 0.78rem;
+      min-width: 90px;
+      text-align: right;
+    }
+    .bulk-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem 1.5rem;
+      font-size: 0.72rem;
+      color: var(--text-gray);
+      border-top: 1px solid rgba(245, 158, 11, 0.2);
+      background: rgba(0, 0, 0, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .shortcuts-hint {
+      background: rgba(245, 158, 11, 0.12);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      color: var(--accent-color);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      cursor: help;
+    }
+
+    #toastContainer {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 360px;
+      pointer-events: none;
+    }
+    .toast {
+      background: linear-gradient(135deg, #2c3e50, #1a252f);
+      color: white;
+      padding: 14px 18px;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      box-shadow: var(--shadow-md);
+      animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-left: 4px solid var(--accent-color);
+      pointer-events: auto;
+      max-width: 100%;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+    .toast.success {
+      background: linear-gradient(135deg, var(--success-green), var(--success-green-dark));
+      border-left-color: #27ae60;
+    }
+    .toast.error {
+      background: linear-gradient(135deg, var(--danger-red), #c0392b);
+      border-left-color: #c0392b;
+    }
+    .toast.warning {
+      background: linear-gradient(135deg, var(--warning-orange), #d35400);
+      border-left-color: #d35400;
+    }
+    .toast.info {
+      background: linear-gradient(135deg, #3498db, #2980b9);
+      border-left-color: #2980b9;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(120%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; transform: translateX(0); }
+      to { opacity: 0; transform: translateX(20px); }
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: var(--overlay);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: fadeIn 0.2s ease;
+    }
+    .modal.active { display: flex; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
+    .modal-content {
+      background: var(--bg-card);
+      padding: 1.8rem;
+      border-radius: var(--border-radius-lg);
+      max-width: 520px;
+      width: 100%;
+      border: 1px solid var(--border-glow);
+      box-shadow: var(--shadow-lg);
+      animation: modalSlide 0.3s ease;
+    }
+    @keyframes modalSlide {
+      from { transform: translateY(-30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.4rem;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+    }
+    .modal-header h3 {
+      color: var(--accent-color);
+      font-size: 1.3rem;
+      font-weight: 800;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-gray);
+      cursor: pointer;
+      transition: var(--transition);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-close:hover {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-color);
+      transform: rotate(90deg);
+    }
+    
+    .modal-body .input-group {
+      margin-bottom: 1.1rem;
+    }
+    .modal-footer {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+      padding-top: 15px;
+      border-top: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    /* ===== MODAL DE LOGIN - COM LOGO CENTRALIZADO ===== */
+    .login-modal .modal-content {
+      max-width: 420px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-modal .logo-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1.2rem;
+      padding: 10px;
+    }
+
+    .login-modal .logo {
+      max-width: 140px;
+      max-height: 140px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(245, 158, 11, 0.3);
+      display: block;
+      margin: 0 auto;
+      transition: transform 0.3s ease;
+    }
+
+    .login-modal .logo:hover {
+      transform: scale(1.03);
+    }
+
+    .login-modal .logo-fallback {
+      font-size: 3.5rem;
+      margin: 0 auto 1rem auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 140px;
+      height: 140px;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-color-dark));
+      border-radius: 20px;
+      color: white;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    }
+
+    .login-modal h3 {
+      margin: 0.5rem 0;
+      font-size: 1.4rem;
+      font-family: 'Times New Roman', Times, serif;
+      color: var(--text-offwhite);
+      text-align: center;
+      width: 100%;
+    }
+
+    .login-modal p {
+      color: var(--text-gray);
+      margin: 0.5rem 0 1.5rem 0;
+      font-size: 0.85rem;
+      text-align: center;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .login-modal .pin-input {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin: 1rem 0 1.5rem 0;
+      width: 100%;
+    }
+
+    .login-modal .login-error {
+      color: var(--danger-red);
+      font-size: 0.8rem;
+      margin: 0 0 1rem 0;
+      min-height: 20px;
+      font-weight: 600;
+      text-align: center;
+      width: 100%;
+    }
+
+    .login-modal .btn-primary {
+      width: 100%;
+      max-width: 280px;
+      padding: 12px;
+      margin: 0 auto;
+      display: block;
+    }
+
+    .login-modal .pin-hint {
+      margin-top: 15px;
+      font-size: 0.75rem;
+      color: var(--text-gray);
+      text-align: center;
+      width: 100%;
+      line-height: 1.5;
+    }
+
+    .login-modal .pin-hint a {
+      color: var(--success-green);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .login-modal .pin-hint a:hover {
+      text-decoration: underline;
+    }
+
+    .month-selector-group {
+      background: rgba(0,0,0,0.25);
+      border-radius: 40px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 15px;
+      font-size: 0.8rem;
+    }
+    .month-selector-group select {
+      background: var(--bg-input);
+      border: 1px solid var(--accent-color);
+      border-radius: 30px;
+      padding: 6px 12px;
+      font-weight: bold;
+      color: var(--accent-color);
+      cursor: pointer;
+      outline: none;
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard { margin: 0 8px; }
+      .hero h1 { font-size: 1.4rem; }
+      .finances-panel { flex-direction: column; align-items: stretch; }
+      .profit-card { justify-content: center; }
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 10px; }
+      .card-panel, .finances-panel { margin: 0.8rem; padding: 0.9rem 1.2rem; }
+      .form-row { flex-direction: column; }
+      .input-group { width: 100%; }
+      .btn-group { width: 100%; }
+      .btn { width: 100%; }
+      .aluno-info { min-width: 160px; font-size: 0.78rem; }
+      .aluno-detail { font-size: 0.65rem; }
+      table { font-size: 0.68rem; min-width: 1100px; }
+      th, td { padding: 7px 3px; }
+      .month-summary-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .progress-bar { max-width: 100%; }
+      .bulk-actions { width: 100%; justify-content: center; }
+      footer { flex-direction: column; text-align: center; }
+    }
+
+    @media (max-width: 480px) {
+      .hero { padding: 1rem 1.3rem; }
+      .hero h1 { font-size: 1.1rem; }
+      .monthly-fee-box { width: 100%; justify-content: center; }
+      .profit-card { width: 100%; justify-content: center; }
+      .table-wrapper { margin: 0.5rem 0.8rem 1.2rem 0.8rem; }
+      table { min-width: 900px; font-size: 0.65rem; }
+      .aluno-info { min-width: 140px; }
+      .actions button { padding: 3px 8px; font-size: 0.6rem; min-width: 55px; }
+      .pin-input input { width: 48px; height: 52px; font-size: 1.3rem; }
+      .payment-date input { width: 60px; }
+    }
+
+    tbody tr { animation: rowFade 0.3s ease forwards; opacity: 0; }
+    tbody tr:nth-child(1) { animation-delay: 0.05s; }
+    tbody tr:nth-child(2) { animation-delay: 0.1s; }
+    tbody tr:nth-child(3) { animation-delay: 0.15s; }
+    tbody tr:nth-child(4) { animation-delay: 0.2s; }
+    tbody tr:nth-child(5) { animation-delay: 0.25s; }
+    @keyframes rowFade { to { opacity: 1; } }
+
+    @media print {
+      body { background: white; padding: 0; margin: 0; }
+      .watermark, .hero .btn-theme, .finances-panel .btn-small, 
+      .card-panel .btn-group, .filter-buttons, .bulk-actions,
+      .actions, footer .shortcuts-hint,
+      #toastContainer, .modal { display: none !important; }
+      .dashboard { margin: 0; border-radius: 0; box-shadow: none; }
+      .hero { background: var(--primary-color-dark); print-color-adjust: exact; }
+      .profit-card { print-color-adjust: exact; }
+      table { font-size: 10pt; }
+      td, th { padding: 4px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 🖼️ WATERMARK COM LOGO -->
+<div class="watermark">
+  <div class="watermark-logo">
+    <!-- <img src="logo.png" alt="Logo" class="watermark-logo-img" onerror="this.style.display='none'"> -->
+    <div class="watermark-logo-text">EVOLUÇÃO</div>
+    <div class="watermark-logo-subtext">DO CORPO</div>
+  </div>
+</div>
+
+<div id="toastContainer"></div>
+
+<!-- Modal de Edição de Aluno -->
+<div id="modalEditar" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>✏️ Editar Aluno</h3>
+      <button class="modal-close" onclick="fecharModalEditar()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editIndex">
+      <div class="input-group">
+        <label>🏷️ Nome Completo *</label>
+        <input type="text" id="editNome" placeholder="Nome do aluno" required>
+      </div>
+      <div class="input-group">
+        <label>📱 WhatsApp (com DDD)</label>
+        <input type="tel" id="editWhatsapp" placeholder="(11) 91234-5678" maxlength="15">
+      </div>
+      <div class="input-group">
+        <label>📅 Data de Início</label>
+        <input type="date" id="editDataInicio">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharModalEditar()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarEdicao()">💾 Salvar Alterações</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Relatório -->
+<div id="modalRelatorio" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>📊 Relatório de Mensalidades</h3>
+      <button class="modal-close" onclick="fecharModalRelatorio()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+        <div class="month-selector-group">
+          <span>🗓️ Mês/Ano:</span>
+          <select id="relatorioMesSelect"></select>
+          <select id="relatorioAnoSelect"></select>
+          <button class="btn-small" onclick="atualizarRelatorioPorPeriodo()">📌 Visualizar</button>
+        </div>
+      </div>
+      <div id="relatorioBody"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharModalRelatorio()">Fechar</button>
+      <button class="btn btn-primary" onclick="exportarPDF()">📄 Exportar PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Login/PIN com Logo Centralizado -->
+<div id="modalLogin" class="modal login-modal">
+  <div class="modal-content">
+    <div class="logo-container">
+      <img src="logo.png" alt="Logo Academia Evolução do Corpo" class="logo" id="loginLogo" onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='flex'">
+      <div id="logoFallback" class="logo-fallback" style="display:none;">💪</div>
+    </div>
+    
+    <h3>Academia Evolução do Corpo</h3>
+    <p>Digite seu PIN de acesso para continuar</p>
+    
+    <div class="login-error" id="loginError"></div>
+    
+    <div class="pin-input">
+      <input type="number" maxlength="1" class="pin-digit" data-index="0" inputmode="numeric" pattern="[0-9]*">
+      <input type="number" maxlength="1" class="pin-digit" data-index="1" inputmode="numeric" pattern="[0-9]*">
+      <input type="number" maxlength="1" class="pin-digit" data-index="2" inputmode="numeric" pattern="[0-9]*">
+      <input type="number" maxlength="1" class="pin-digit" data-index="3" inputmode="numeric" pattern="[0-9]*">
+    </div>
+    
+    <button class="btn btn-primary" onclick="verificarPIN()" style="width:100%;padding:12px;">🔓 Entrar</button>
+    
+    <p class="pin-hint">
+      PIN padrão: <strong style="color:var(--accent-color);">1234</strong><br>
+      <a href="#" onclick="redefinirPIN(event)">🔄 Redefinir PIN</a>
+    </p>
+  </div>
+</div>
+
+<!-- Modal de Alteração de PIN -->
+<div id="modalAlterarPIN" class="modal">
+  <div class="modal-content" style="max-width:450px;">
+    <div class="modal-header">
+      <h3>🔐 Alterar PIN de Acesso</h3>
+      <button class="modal-close" onclick="fecharModalAlterarPIN()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div id="stepAtual">
+        <p style="margin-bottom:15px;color:var(--text-gray);font-size:0.85rem;">
+          Para sua segurança, confirme seu PIN atual antes de alterar.
+        </p>
+        <div class="pin-input">
+          <input type="number" maxlength="1" class="pin-digit-confirm" data-index="0">
+          <input type="number" maxlength="1" class="pin-digit-confirm" data-index="1">
+          <input type="number" maxlength="1" class="pin-digit-confirm" data-index="2">
+          <input type="number" maxlength="1" class="pin-digit-confirm" data-index="3">
+        </div>
+        <div class="login-error" id="errorConfirmarPIN"></div>
+        <button class="btn btn-primary" onclick="confirmarPINAtual()" style="width:100%;padding:12px;">
+          ✓ Confirmar PIN Atual
+        </button>
+      </div>
+      
+      <div id="stepNovoPIN" style="display:none;">
+        <p style="margin-bottom:15px;color:var(--text-gray);font-size:0.85rem;">
+          Digite seu <strong>novo PIN</strong> (4 dígitos numéricos):
+        </p>
+        <div class="pin-input">
+          <input type="number" maxlength="1" class="pin-digit-novo" data-index="0">
+          <input type="number" maxlength="1" class="pin-digit-novo" data-index="1">
+          <input type="number" maxlength="1" class="pin-digit-novo" data-index="2">
+          <input type="number" maxlength="1" class="pin-digit-novo" data-index="3">
+        </div>
+        <div id="novoPINStrength" style="font-size:0.7rem;margin:8px 0;color:var(--text-gray);"></div>
+        <button class="btn btn-primary" onclick="avançarParaConfirmacao()" style="width:100%;padding:12px;">
+          Próximo →
+        </button>
+      </div>
+      
+      <div id="stepConfirmarNovo" style="display:none;">
+        <p style="margin-bottom:15px;color:var(--text-gray);font-size:0.85rem;">
+          <strong>Confirme</strong> seu novo PIN digitando novamente:
+        </p>
+        <div class="pin-input">
+          <input type="number" maxlength="1" class="pin-digit-confirmacao" data-index="0">
+          <input type="number" maxlength="1" class="pin-digit-confirmacao" data-index="1">
+          <input type="number" maxlength="1" class="pin-digit-confirmacao" data-index="2">
+          <input type="number" maxlength="1" class="pin-digit-confirmacao" data-index="3">
+        </div>
+        <div class="login-error" id="errorConfirmarNovo"></div>
+        <button class="btn btn-primary" onclick="salvarNovoPIN()" style="width:100%;padding:12px;background:linear-gradient(135deg,var(--success-green),var(--success-green-dark));">
+          💾 Salvar Novo PIN
+        </button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharModalAlterarPIN()">Cancelar</button>
+      <button class="btn btn-small" onclick="voltarStep()" id="btnVoltarStep" style="display:none;">← Voltar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Dashboard Principal -->
+<div class="dashboard" id="mainDashboard" style="display:none;">
+  <div class="hero">
+    <h1>
+      ACADEMIA EVOLUÇÃO DO CORPO · CONTROLE DE MENSALIDADES
+      <span id="themeToggle" class="btn btn-theme" title="Alternar tema">🌓 Tema</span>
+    </h1>
+    <div class="hero-sub">💪 Força • Disciplina • Transformação</div>
+  </div>
+
+  <div class="finances-panel">
+    <div class="finance-control">
+      <div class="monthly-fee-box">
+        <label>💰 MENSALIDADE</label>
+        <input type="number" id="valorMensalidade" value="100" step="10" min="0">
+        <button class="btn-small" onclick="atualizarValorMensalidade()">✓</button>
+      </div>
+      <button class="btn-small" onclick="backupDados()" title="Backup dos dados">💾 Backup</button>
+      <button class="btn-small" onclick="restaurarDados()" title="Restaurar backup">🔄 Restaurar</button>
+      <button class="btn-small" onclick="gerarRelatorioMensal()" title="Relatório do mês">📊 Relatório</button>
+      <button class="btn-small" onclick="exportarPDF()" title="Exportar PDF">📄 PDF</button>
+    </div>
+    <div class="profit-card">
+      <span>📊 LUCRO MÊS ATUAL</span>
+      <span id="lucroMensalDisplay">R$ 0,00</span>
+    </div>
+  </div>
+
+  <div class="card-panel">
+    <div class="form-row">
+      <div class="input-group">
+        <label>🏷️ NOME COMPLETO *</label>
+        <input type="text" id="nomeAluno" placeholder="Nome do aluno" autocomplete="off">
+      </div>
+      <div class="input-group">
+        <label>📅 DATA DE INÍCIO</label>
+        <input type="date" id="dataInicio">
+      </div>
+      <div class="input-group">
+        <label>📱 WHATSAPP</label>
+        <input type="tel" id="whatsappAluno" placeholder="(11) 91234-5678" maxlength="15" autocomplete="off">
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="adicionarAluno()">➕ Adicionar</button>
+        <button class="btn btn-secondary" onclick="exportarCSV()">📎 CSV</button>
+      </div>
+    </div>
+
+    <div class="form-row" style="margin-top:16px;">
+      <div class="input-group search-group" style="flex:3;">
+        <label>🔍 PESQUISAR</label>
+        <input type="text" id="pesquisaAluno" placeholder="Digite para filtrar alunos..." autocomplete="off">
+      </div>
+      <div class="btn-group" style="flex:1;min-width:auto;">
+        <button class="btn btn-secondary" onclick="limparPesquisa()" style="background:#3a2a1a;">✖️ Limpar</button>
+      </div>
+    </div>
+    
+    <div id="searchInfo" class="search-info">
+      <span>📋 Carregando...</span>
+      <div class="filter-buttons">
+        <button class="filter-btn active" data-filter="todos" onclick="aplicarFiltroStatus('todos')">Todos</button>
+        <button class="filter-btn" data-filter="pagos" onclick="aplicarFiltroStatus('pagos')">✅ Pagos</button>
+        <button class="filter-btn" data-filter="pendentes" onclick="aplicarFiltroStatus('pendentes')">⏳ Pendentes</button>
+        <button class="filter-btn" data-filter="vencidos" onclick="aplicarFiltroStatus('vencidos')">🔴 Vencidos</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table id="tabelaPagamentos">
+      <thead>
+        <tr><th>📋 ALUNO</th><th colspan="2">JAN</th><th colspan="2">FEV</th><th colspan="2">MAR</th><th colspan="2">ABR</th><th colspan="2">MAI</th><th colspan="2">JUN</th><th colspan="2">JUL</th><th colspan="2">AGO</th><th colspan="2">SET</th><th colspan="2">OUT</th><th colspan="2">NOV</th><th colspan="2">DEZ</th><th>⚙️</th></tr>
+        <tr style="background:#0f1a2f;font-size:0.65rem;"><th></th><th>✔️</th><th>📅</th><th>✔️</th><th>📅</th><th>✔️</th><th>📅</th><th>✔️</th><th>📅</th><th>✔️</th><th>📅</th><th>✔️</th><th>📅</th><th>✔️</th><th>📅</th><th>✔️</th><th>📅</th><th>✔️</th><th>📅</th><th>✔️</th><th>📅</th><th>✔️</th><th>📅</th><th>✔️</th><th>📅</th><th></th></tr>
+      </thead>
+      <tbody id="tabelaBody"></tbody>
+    </table>
+  </div>
+  
+  <footer>
+    <span>🏋️ Academia Evolução do Corpo © <span id="anoAtual"></span> • Dados salvos localmente</span>
+    <span class="shortcuts-hint" title="Ctrl+N: Novo | Ctrl+F: Buscar | Ctrl+E: Exportar | Esc: Limpar | Ctrl+R: Relatório">⌨️ Atalhos: Ctrl+N/F/E/R</span>
+  </footer>
+</div>
+
+<script>
+// ⚙️ CONFIGURAÇÕES PERSONALIZÁVEIS
+const CONFIG = {
+  STORAGE_KEY: "evolucao_corpo_v1",
+  STORAGE_VALOR_KEY: "evolucao_corpo_valor",
+  STORAGE_PIN_KEY: "evolucao_corpo_pin",
+  STORAGE_THEME_KEY: "evolucao_corpo_theme",
+  PIN_PADRAO: "1234",
+  NOME_ACADEMIA: "Academia Evolução do Corpo",
+  SLOGAN: "Força • Disciplina • Transformação",
+  EMOJI: "💪",
+  PIX_CHAVE: "16725528000168",  // CNPJ atualizado
+  MESES: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"],
+  MESES_CURTOS: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
+};
+
+let alunos = [];
+let filtroTexto = "";
+let filtroStatus = "todos";
+let valorMensalidade = 100;
+let pinDigitado = "";
+let pesquisaTimeout = null;
+let currentRelatorioMes = null;
+let currentRelatorioAno = null;
+let pinAtualDigitado = "";
+let novoPINDigitado = "";
+let confirmacaoPINDigitado = "";
+let stepAtual = 1;
+
+function parseDataPagamento(valor) {
+  if (!valor || valor.trim() === "") return { dia: null, mes: null, ano: null };
+  let partes = valor.trim().split(/[/-]/);
+  let dia = null, mes = null, ano = null;
+  if (partes.length === 1) { dia = parseInt(partes[0]); if (isNaN(dia)) return { dia: null, mes: null, ano: null }; }
+  else if (partes.length >= 2) { dia = parseInt(partes[0]); mes = parseInt(partes[1]); if (partes.length >= 3) ano = parseInt(partes[2]); if (isNaN(dia) || isNaN(mes)) return { dia: null, mes: null, ano: null }; }
+  if (dia && (dia < 1 || dia > 31)) return { dia: null, mes: null, ano: null };
+  if (mes && (mes < 1 || mes > 12)) return { dia: null, mes: null, ano: null };
+  return { dia, mes, ano };
+}
+function formatarDataPagamento(diaPagamento, mesPagamento, anoPagamento) {
+  if (!diaPagamento) return "";
+  if (mesPagamento) return `${diaPagamento}/${mesPagamento.toString().padStart(2,'0')}${anoPagamento ? '/' + anoPagamento : ''}`;
+  return diaPagamento.toString();
+}
+function salvarDataPagamento(aluno, mesIndex, dataString) {
+  const parsed = parseDataPagamento(dataString);
+  aluno.meses[mesIndex].diaPagamento = parsed.dia;
+  aluno.meses[mesIndex].mesPagamento = parsed.mes;
+  aluno.meses[mesIndex].anoPagamento = parsed.ano;
+}
+function obterDataPagamentoFormatada(aluno, mesIndex) {
+  const data = aluno.meses[mesIndex];
+  return formatarDataPagamento(data.diaPagamento, data.mesPagamento, data.anoPagamento);
+}
+function verificarAtrasoPorMes(aluno, mesIndex, anoRef) {
+  const dataPag = aluno.meses[mesIndex];
+  if (!dataPag.diaPagamento) return false;
+  const hoje = new Date();
+  const ano = anoRef !== undefined ? anoRef : hoje.getFullYear();
+  const dataVencimento = new Date(ano, mesIndex, dataPag.diaPagamento);
+  const dataAtual = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+  return (!aluno.meses[mesIndex].pago && dataAtual > dataVencimento);
+}
+function criarMesesVazios() { return Array(12).fill(null).map(() => ({ pago: false, diaPagamento: null, mesPagamento: null, anoPagamento: null })); }
+function ordenarAlunos() { alunos.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR')); }
+function carregarValorMensalidade() { const v = localStorage.getItem(CONFIG.STORAGE_VALOR_KEY); if(v && !isNaN(parseFloat(v))){ valorMensalidade=parseFloat(v); document.getElementById('valorMensalidade').value=valorMensalidade; } }
+function carregarDados() {
+  const dadosRaw = localStorage.getItem(CONFIG.STORAGE_KEY);
+  if(dadosRaw){
+    try{
+      const parsed=JSON.parse(dadosRaw);
+      if(Array.isArray(parsed)){
+        alunos=parsed.map(aluno=>({ nome:aluno.nome, dataInicio:aluno.dataInicio||new Date().toISOString().split('T')[0], whatsapp:aluno.whatsapp||"", meses:aluno.meses?.map(m=>({ pago:m.pago===true, diaPagamento:m.diaPagamento||null, mesPagamento:m.mesPagamento||null, anoPagamento:m.anoPagamento||null }))||criarMesesVazios() }));
+      }
+    }catch(e){ alunos=[]; }
+  }
+  ordenarAlunos();
+}
+function salvar() { ordenarAlunos(); localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(alunos)); calcularTotalLucroMensal(); }
+function calcularTotalLucroMensal() { const mesAtual=new Date().getMonth(); const totalPagos=alunos.filter(a=>a.meses?.[mesAtual]?.pago).length; const lucro=totalPagos*valorMensalidade; document.getElementById('lucroMensalDisplay').textContent = `R$ ${lucro.toFixed(2).replace('.',',')}`; return { totalPagos, totalAlunos:alunos.length, lucro }; }
+
+function gerarRelatorioCompleto(mes, ano){
+  const pagos = alunos.filter(a => a.meses[mes]?.pago).length;
+  const pendentes = alunos.length - pagos;
+  const receita = pagos * valorMensalidade;
+  const taxaOcupacao = alunos.length > 0 ? Math.round((pagos / alunos.length) * 100) : 0;
+  const atrasados = alunos.filter(a => verificarAtrasoPorMes(a, mes, ano)).length;
+  const monthName = CONFIG.MESES[mes];
+  return `
+    <div style="text-align:center;margin-bottom:20px;"><div style="font-size:2rem;">${CONFIG.EMOJI}</div><h3 style="color:var(--accent-color);">${monthName} de ${ano}</h3><p>${CONFIG.NOME_ACADEMIA}</p></div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-bottom:20px;">
+      <div style="background:rgba(46,204,113,0.1);padding:12px;border-radius:12px;text-align:center;"><div style="font-size:1.8rem;font-weight:800;color:#2ecc71;">${pagos}</div><div style="font-size:0.7rem;">Alunos Pagos</div></div>
+      <div style="background:rgba(231,76,60,0.1);padding:12px;border-radius:12px;text-align:center;"><div style="font-size:1.8rem;font-weight:800;color:#e74c3c;">${pendentes}</div><div style="font-size:0.7rem;">Alunos Pendentes</div></div>
+      <div style="background:rgba(243,156,18,0.1);padding:12px;border-radius:12px;text-align:center;"><div style="font-size:1.8rem;font-weight:800;color:#f39c12;">${atrasados}</div><div style="font-size:0.7rem;">Em Atraso</div></div>
+      <div style="background:rgba(255,215,0,0.1);padding:12px;border-radius:12px;text-align:center;"><div style="font-size:1.8rem;font-weight:800;color:var(--accent-color);">R$ ${receita.toFixed(2)}</div><div style="font-size:0.7rem;">Receita do Mês</div></div>
+    </div>
+    <div style="background:rgba(0,0,0,0.2);padding:15px;border-radius:12px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;"><span>Taxa de Ocupação</span><span style="font-weight:800;">${taxaOcupacao}%</span></div>
+      <div style="background:rgba(0,0,0,0.3);border-radius:20px;overflow:hidden;height:8px;"><div style="width:${taxaOcupacao}%;height:100%;background:linear-gradient(90deg,var(--success-green),var(--accent-color));"></div></div>
+    </div>
+    <div style="margin-top:15px;font-size:0.7rem;color:var(--text-gray);text-align:center;">Total de Alunos: ${alunos.length}<br>Valor da Mensalidade: R$ ${valorMensalidade.toFixed(2)}</div>
+  `;
+}
+function atualizarRelatorioPorPeriodo(){
+  const mes = parseInt(document.getElementById('relatorioMesSelect').value);
+  const ano = parseInt(document.getElementById('relatorioAnoSelect').value);
+  if(isNaN(mes) || isNaN(ano)) return;
+  currentRelatorioMes = mes; currentRelatorioAno = ano;
+  document.getElementById('relatorioBody').innerHTML = gerarRelatorioCompleto(mes, ano);
+}
+function gerarRelatorioMensal(){
+  const hoje = new Date();
+  const mesAtual = hoje.getMonth();
+  const anoAtual = hoje.getFullYear();
+  const mesSelect = document.getElementById('relatorioMesSelect');
+  const anoSelect = document.getElementById('relatorioAnoSelect');
+  mesSelect.innerHTML = '';
+  for(let m=0; m<12; m++){ const opt=document.createElement('option'); opt.value=m; opt.textContent=CONFIG.MESES[m]; if(m===mesAtual) opt.selected=true; mesSelect.appendChild(opt); }
+  anoSelect.innerHTML = '';
+  const anos = Array.from({length:5}, (_,i)=>anoAtual-2+i);
+  anos.forEach(a=>{ const opt=document.createElement('option'); opt.value=a; opt.textContent=a; if(a===anoAtual) opt.selected=true; anoSelect.appendChild(opt); });
+  currentRelatorioMes = mesAtual;
+  currentRelatorioAno = anoAtual;
+  document.getElementById('relatorioBody').innerHTML = gerarRelatorioCompleto(mesAtual, anoAtual);
+  document.getElementById('modalRelatorio').classList.add('active');
+}
+function fecharModalRelatorio() { document.getElementById('modalRelatorio').classList.remove('active'); }
+function exportarPDF() { fecharModalRelatorio(); showToast('📄 Preparando impressão... Use Ctrl+P', 'info', 3000); setTimeout(()=>window.print(), 500); }
+
+function adicionarAluno(){
+  const nome = document.getElementById('nomeAluno').value.trim();
+  const dataInicio = document.getElementById('dataInicio').value || new Date().toISOString().split('T')[0];
+  const whatsappInput = document.getElementById('whatsappAluno');
+  const whatsapp = whatsappInput.dataset.raw || whatsappInput.value.replace(/\D/g, '');
+  if(!nome){ showToast('❌ Nome obrigatório!', 'error'); document.getElementById('nomeAluno').focus(); return; }
+  if(alunos.some(a=> a.nome.toLowerCase().trim() === nome.toLowerCase())){ showToast('⚠️ Aluno já cadastrado!', 'warning'); return; }
+  alunos.push({ nome, dataInicio, whatsapp, meses: criarMesesVazios() });
+  salvar();
+  document.getElementById('nomeAluno').value = '';
+  document.getElementById('whatsappAluno').value = '';
+  document.getElementById('whatsappAluno').dataset.raw = '';
+  renderizarTabela();
+  atualizarInfoPesquisa();
+  showToast(`✅ ${nome} adicionado!`, 'success');
+}
+function removerAluno(idx) { if(confirm(`🗑️ Remover "${alunos[idx].nome}"?`)){ alunos.splice(idx,1); salvar(); renderizarTabela(); atualizarInfoPesquisa(); showToast(`🗑️ removido`, 'info'); } }
+function editarAluno(idx){ const a=alunos[idx]; document.getElementById('editIndex').value=idx; document.getElementById('editNome').value=a.nome; document.getElementById('editWhatsapp').value=a.whatsapp? a.whatsapp.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3'):''; document.getElementById('editDataInicio').value=a.dataInicio; document.getElementById('modalEditar').classList.add('active'); }
+function fecharModalEditar(){ document.getElementById('modalEditar').classList.remove('active'); }
+function salvarEdicao(){ const idx=parseInt(document.getElementById('editIndex').value); const novoNome=document.getElementById('editNome').value.trim(); const novoWhatsappInput=document.getElementById('editWhatsapp'); const novoWhatsapp=novoWhatsappInput.dataset.raw||novoWhatsappInput.value.replace(/\D/g,''); const novaData=document.getElementById('editDataInicio').value; if(!novoNome){ showToast('❌ Nome obrigatório!','error'); return; } if(alunos.some((a,i)=>i!==idx && a.nome.toLowerCase().trim()===novoNome.toLowerCase())){ showToast('⚠️ Nome já existe!','warning'); return; } alunos[idx].nome=novoNome; alunos[idx].whatsapp=novoWhatsapp; alunos[idx].dataInicio=novaData||alunos[idx].dataInicio; salvar(); renderizarTabela(); fecharModalEditar(); showToast(`✅ ${novoNome} atualizado!`, 'success'); }
+function togglePagamento(idx, mes){ const aluno=alunos[idx]; aluno.meses[mes].pago=!aluno.meses[mes].pago; salvar(); renderizarTabela(); showToast(`${aluno.nome} • ${CONFIG.MESES_CURTOS[mes]}: ${aluno.meses[mes].pago ? '✅ Pago' : '⏳ Pendente'}`, aluno.meses[mes].pago ? 'success' : 'info', 2000); }
+function atualizarDataPagamento(idx, mes, valor){ salvarDataPagamento(alunos[idx], mes, valor); salvar(); renderizarTabela(); }
+
+function enviarCobrancaWhatsApp(idx){ 
+  const aluno = alunos[idx]; 
+  if(!aluno.whatsapp){ showToast(`⚠️ ${aluno.nome} sem WhatsApp!`, 'warning'); return; } 
+  let num = aluno.whatsapp.replace(/\D/g,''); 
+  if(!num.startsWith('55')) num = '55' + num; 
+  if(num.length < 12 || num.length > 13){ showToast('❌ Número inválido! Use: DDD + 9 dígitos (ex: 11912345678)', 'error'); return; } 
+  const mesAtual = new Date().getMonth(); 
+  const anoAtual = new Date().getFullYear(); 
+  const mesNome = CONFIG.MESES[mesAtual]; 
+  const pago = aluno.meses[mesAtual]?.pago; 
+  const dataPag = obterDataPagamentoFormatada(aluno, mesAtual); 
+  const dataInicioFormatada = aluno.dataInicio ? aluno.dataInicio.split('-').reverse().join('/') : "não informada"; 
+  const statusTexto = pago ? "✅ PAGO" : "❌ *Pendente*"; 
+  // NOVA MENSAGEM DE COBRANÇA PERSONALIZADA
+  const aviso = !pago ? "Sua mensalidade ainda não foi registrada como paga. Realize o pagamento para continuar treinando!" : "✅ Agradecemos o pagamento!"; 
+  
+  let msg = `🏋️ *${CONFIG.NOME_ACADEMIA.toUpperCase()}*
+
+Olá, *${aluno.nome}*! Tudo bem? ${CONFIG.EMOJI}
+
+📆 *Referente à mensalidade de ${mesNome}/${anoAtual}*
+💰 *Valor:* R$ ${valorMensalidade.toFixed(2).replace('.',',')}
+📊 *Status:* ${statusTexto}
+`; 
+  if(!pago && dataPag) msg += `📅 *Vencimento:* ${dataPag}\n`; 
+  msg += `\n${aviso}\n\n💳 *Formas de pagamento:*\n• PIX (CNPJ): ${CONFIG.PIX_CHAVE}\n• Dinheiro (diretamente na academia)\n• Transferência bancária (consulte-nos)\n\n✨ Após o pagamento, envie o comprovante para que possamos atualizar seu cadastro.\n\n📅 *Início das atividades:* ${dataInicioFormatada}\n${CONFIG.EMOJI} *${CONFIG.NOME_ACADEMIA} – ${CONFIG.SLOGAN}*`; 
+  
+  const msgCodificada = encodeURIComponent(msg);
+  window.open(`https://wa.me/${num}?text=${msgCodificada}`, '_blank'); 
+  showToast(`💬 Abrindo WhatsApp para ${aluno.nome}...`, 'info', 2000); 
+}
+
+function marcarTodosPagos(mes){ if(!confirm(`✅ Marcar TODOS os ${alunos.length} alunos como PAGOS em ${CONFIG.MESES[mes]}?`)) return; let cont=0; alunos.forEach(aluno=>{ if(!aluno.meses[mes].pago){ aluno.meses[mes].pago=true; cont++; } }); salvar(); renderizarTabela(); showToast(`🎉 ${cont} aluno(s) pagos em ${CONFIG.MESES_CURTOS[mes]}!`, 'success'); }
+function cobrarPendentes(mes){ const pendentes=alunos.filter(a=>!a.meses[mes]?.pago && a.whatsapp); if(pendentes.length===0){ showToast('😊 Nenhum pendente com WhatsApp!', 'info'); return; } if(!confirm(`💬 Enviar cobrança para ${pendentes.length} aluno(s)?`)) return; pendentes.forEach((aluno,i)=>{ setTimeout(()=>{ const idx=alunos.findIndex(a=>a.nome===aluno.nome); if(idx>=0) enviarCobrancaWhatsApp(idx); }, i*1000); }); showToast(`📤 Enviando ${pendentes.length} cobranças...`, 'info', 3000); }
+function pesquisarAluno(){ filtroTexto=document.getElementById('pesquisaAluno').value.trim().toLowerCase(); renderizarTabela(); atualizarInfoPesquisa(); }
+function limparPesquisa(){ document.getElementById('pesquisaAluno').value=''; filtroTexto=''; renderizarTabela(); atualizarInfoPesquisa(); }
+function aplicarFiltroStatus(status){ filtroStatus=status; document.querySelectorAll('.filter-btn').forEach(btn=>{ btn.classList.toggle('active', btn.dataset.filter===status); }); renderizarTabela(); atualizarInfoPesquisa(); }
+function filtrarAlunos(){ const mesAtual=new Date().getMonth(); return alunos.filter(aluno=>{ if(filtroTexto && !aluno.nome.toLowerCase().includes(filtroTexto)) return false; if(filtroStatus==='todos') return true; if(filtroStatus==='pagos') return aluno.meses[mesAtual]?.pago; if(filtroStatus==='pendentes') return !aluno.meses[mesAtual]?.pago; if(filtroStatus==='vencidos') return verificarAtrasoPorMes(aluno, mesAtual, new Date().getFullYear()); return true; }); }
+function atualizarInfoPesquisa(){
+  const filtrados=filtrarAlunos();
+  const {totalAlunos}=calcularTotalLucroMensal();
+  document.getElementById('searchInfo').innerHTML=`<span>📋 ${totalAlunos} alunos | Exibindo: ${filtrados.length} (${filtroStatus==='todos'?'Todos':filtroStatus==='pagos'?'✅ Pagos':filtroStatus==='pendentes'?'⏳ Pendentes':'🔴 Vencidos'})</span><div class="filter-buttons"><button class="filter-btn ${filtroStatus==='todos'?'active':''}" data-filter="todos" onclick="aplicarFiltroStatus('todos')">Todos</button><button class="filter-btn ${filtroStatus==='pagos'?'active':''}" data-filter="pagos" onclick="aplicarFiltroStatus('pagos')">✅ Pagos</button><button class="filter-btn ${filtroStatus==='pendentes'?'active':''}" data-filter="pendentes" onclick="aplicarFiltroStatus('pendentes')">⏳ Pendentes</button><button class="filter-btn ${filtroStatus==='vencidos'?'active':''}" data-filter="vencidos" onclick="aplicarFiltroStatus('vencidos')">🔴 Vencidos</button></div>${filtroTexto?`<button class="clear-search" onclick="limparPesquisa()">✖️ Limpar</button>`:''}`;
+}
+function formatarDataBR(dataStr){ if(!dataStr) return '-'; try{ const [ano,mes,dia]=dataStr.split('-'); return `${dia}/${mes}/${ano}`; }catch{ return dataStr; } }
+function formatarWhatsAppDisplay(numero){ const num=numero.replace(/\D/g,''); if(num.length>=11) return `(${num.slice(0,2)}) ${num.slice(2,7)}-${num.slice(7)}`; if(num.length>=10) return `(${num.slice(0,2)}) ${num.slice(2,6)}-${num.slice(6)}`; return numero; }
+function exportarCSV(){ if(alunos.length===0){ showToast('📭 Nenhum aluno','warning'); return; } const mesAtual=new Date().getMonth(); const filtrados=filtrarAlunos(); let csv=["Nome,Data Início,WhatsApp,Status "+CONFIG.MESES[mesAtual]+","+CONFIG.MESES.flatMap(m=>[`${m} (Pago)`,`${m} (Data)`]).join(",")]; filtrados.forEach(aluno=>{ let row=[`"${aluno.nome.replace(/"/g,'""')}"`, aluno.dataInicio, aluno.whatsapp||"", aluno.meses[mesAtual]?.pago?"Pago":"Pendente"]; for(let m=0;m<12;m++){ row.push(aluno.meses[m].pago?"Pago":"Pendente"); row.push(obterDataPagamentoFormatada(aluno,m)||""); } csv.push(row.join(",")); }); const blob=new Blob(["\uFEFF"+csv.join("\n")],{type:"text/csv;charset=utf-8"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`alunos_${new Date().toISOString().slice(0,10)}.csv`; a.click(); URL.revokeObjectURL(a.href); showToast(`📎 CSV exportado!`, 'success'); }
+function backupDados(){ const dados={ versao:"1.0", dataBackup:new Date().toISOString(), valorMensalidade, alunos }; const blob=new Blob([JSON.stringify(dados,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`backup_evolucao_${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(a.href); showToast('💾 Backup realizado!', 'success'); }
+function restaurarDados(){ const input=document.createElement('input'); input.type='file'; input.accept='.json'; input.onchange=(e)=>{ const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=(event)=>{ try{ const dados=JSON.parse(event.target.result); if(!dados.alunos||!Array.isArray(dados.alunos)) throw new Error('Inválido'); if(!confirm('🔄 Restaurar backup? Isso substituirá todos os dados.')) return; alunos=dados.alunos.map(a=>({ nome:a.nome, dataInicio:a.dataInicio, whatsapp:a.whatsapp||"", meses:a.meses?.map(m=>({ pago:m.pago===true, diaPagamento:m.diaPagamento||null, mesPagamento:m.mesPagamento||null, anoPagamento:m.anoPagamento||null }))||criarMesesVazios() })); if(dados.valorMensalidade!==undefined){ valorMensalidade=dados.valorMensalidade; document.getElementById('valorMensalidade').value=valorMensalidade; localStorage.setItem(CONFIG.STORAGE_VALOR_KEY,valorMensalidade); } salvar(); renderizarTabela(); atualizarInfoPesquisa(); showToast(`✅ Restaurado! ${alunos.length} alunos`, 'success',4000); }catch(err){ showToast(`❌ Erro: ${err.message}`, 'error',5000); } }; reader.readAsText(file); }; input.click(); }
+function atualizarValorMensalidade(){ let novoValor=parseFloat(document.getElementById('valorMensalidade').value); if(isNaN(novoValor)||novoValor<0){ showToast('❌ Valor inválido!','error'); document.getElementById('valorMensalidade').value=valorMensalidade; return; } valorMensalidade=novoValor; localStorage.setItem(CONFIG.STORAGE_VALOR_KEY,valorMensalidade); calcularTotalLucroMensal(); showToast(`💰 Mensalidade: R$ ${valorMensalidade.toFixed(2).replace('.',',')}`, 'success'); }
+function renderizarTabela(){ const tbody=document.getElementById('tabelaBody'); tbody.innerHTML=''; const mesAtual=new Date().getMonth(); const filtrados=filtrarAlunos(); const totalAlunos=alunos.length; const pagosNoMes=alunos.filter(a=>a.meses[mesAtual]?.pago).length; const progresso=totalAlunos>0?Math.round((pagosNoMes/totalAlunos)*100):0; if(filtrados.length>0){ const rowResumo=tbody.insertRow(); rowResumo.innerHTML=`<td colspan="26" class="month-summary"><div class="month-summary-header"><span class="month-summary-title">📊 ${CONFIG.MESES[mesAtual].toUpperCase()} ${new Date().getFullYear()}</span><div class="progress-bar"><div class="progress-fill" style="width: ${progresso}%"></div></div><span class="progress-text">${pagosNoMes}/${totalAlunos} • ${progresso}%</span><div class="bulk-actions"><button class="btn-small" onclick="marcarTodosPagos(${mesAtual})">✓ Todos Pagos</button><button class="btn-small" style="background:var(--whatsapp-green);" onclick="cobrarPendentes(${mesAtual})">💬 Cobrar Pendentes</button></div></div></td>`; } if(filtrados.length===0){ const row=tbody.insertRow(); const td=row.insertCell(); td.colSpan=26; td.className='no-results'; td.innerHTML=filtroTexto?`🔍 Nenhum para "${filtroTexto}"`:"💪 Nenhum aluno cadastrado."; return; } filtrados.forEach(aluno=>{ const idxOriginal=alunos.findIndex(a=>a.nome===aluno.nome && a.dataInicio===aluno.dataInicio); if(idxOriginal<0) return; const row=tbody.insertRow(); const tdNome=row.insertCell(); tdNome.className='aluno-info'; tdNome.innerHTML=`<div><div style="font-weight:800;color:var(--accent-color-light);">${aluno.nome}</div><div class="aluno-detail">📅 ${formatarDataBR(aluno.dataInicio)}<br>📱 ${aluno.whatsapp?formatarWhatsAppDisplay(aluno.whatsapp):'Não cadastrado'}</div></div>`; for(let m=0;m<12;m++){ const pagoMes=aluno.meses[m]?.pago; const atrasadoMes=verificarAtrasoPorMes(aluno, m, new Date().getFullYear()); const tdCheck=row.insertCell(); tdCheck.style.textAlign='center'; const cb=document.createElement('input'); cb.type='checkbox'; cb.checked=pagoMes; cb.onclick=(function(idx,mes){ return ()=>togglePagamento(idx,mes); })(idxOriginal,m); if(atrasadoMes) cb.style.accentColor='var(--danger-red)'; else if(pagoMes) cb.style.accentColor='var(--success-green)'; tdCheck.appendChild(cb); const tdData=row.insertCell(); tdData.className='payment-date'; const inputData=document.createElement('input'); inputData.type='text'; inputData.placeholder='DD/MM'; inputData.value=obterDataPagamentoFormatada(aluno,m); if(atrasadoMes) inputData.classList.add('overdue'); inputData.onblur=(function(idx,mes){ return (e)=>atualizarDataPagamento(idx,mes,e.target.value); })(idxOriginal,m); tdData.appendChild(inputData); } const tdAcao=row.insertCell(); tdAcao.className='actions'; tdAcao.innerHTML=`<button class="whatsapp-btn" onclick="enviarCobrancaWhatsApp(${idxOriginal})">💬 Cobrar</button><button class="edit-btn" onclick="editarAluno(${idxOriginal})">✏️ Editar</button><button class="delete-btn" onclick="removerAluno(${idxOriginal})">🗑️ Excluir</button>`; }); }
+
+// Funções de alteração de PIN
+function redefinirPIN(e){
+  e.preventDefault();
+  pinAtualDigitado = ""; novoPINDigitado = ""; confirmacaoPINDigitado = ""; stepAtual = 1;
+  document.querySelectorAll('.pin-digit-confirm, .pin-digit-novo, .pin-digit-confirmacao').forEach(input => input.value = '');
+  document.getElementById('errorConfirmarPIN').textContent = '';
+  document.getElementById('errorConfirmarNovo').textContent = '';
+  document.getElementById('novoPINStrength').textContent = '';
+  document.getElementById('stepAtual').style.display = 'block';
+  document.getElementById('stepNovoPIN').style.display = 'none';
+  document.getElementById('stepConfirmarNovo').style.display = 'none';
+  document.getElementById('btnVoltarStep').style.display = 'none';
+  setTimeout(() => { document.querySelector('.pin-digit-confirm[data-index="0"]').focus(); }, 300);
+  document.getElementById('modalAlterarPIN').classList.add('active');
+}
+function fecharModalAlterarPIN(){
+  document.getElementById('modalAlterarPIN').classList.remove('active');
+  pinAtualDigitado = ""; novoPINDigitado = ""; confirmacaoPINDigitado = ""; stepAtual = 1;
+}
+function configurarInputsAlteracaoPIN(){
+  document.querySelectorAll('.pin-digit-confirm').forEach((input, index) => {
+    input.addEventListener('input', (e) => {
+      const valor = e.target.value.replace(/\D/g, '');
+      if(valor){ pinAtualDigitado += valor; if(index < 3) document.querySelectorAll('.pin-digit-confirm')[index+1].focus(); if(pinAtualDigitado.length === 4) confirmarPINAtual(); }
+    });
+    input.addEventListener('keydown', (e) => { if(e.key === 'Backspace' && !e.target.value && index > 0){ pinAtualDigitado = pinAtualDigitado.slice(0, -1); document.querySelectorAll('.pin-digit-confirm')[index-1].focus(); } });
+  });
+  document.querySelectorAll('.pin-digit-novo').forEach((input, index) => {
+    input.addEventListener('input', (e) => {
+      const valor = e.target.value.replace(/\D/g, '');
+      if(valor){ novoPINDigitado += valor; atualizarIndicadorForcaPIN(); if(index < 3) document.querySelectorAll('.pin-digit-novo')[index+1].focus(); if(novoPINDigitado.length === 4) { setTimeout(() => avançarParaConfirmacao(), 300); } }
+    });
+    input.addEventListener('keydown', (e) => { if(e.key === 'Backspace' && !e.target.value && index > 0){ novoPINDigitado = novoPINDigitado.slice(0, -1); atualizarIndicadorForcaPIN(); document.querySelectorAll('.pin-digit-novo')[index-1].focus(); } });
+  });
+  document.querySelectorAll('.pin-digit-confirmacao').forEach((input, index) => {
+    input.addEventListener('input', (e) => {
+      const valor = e.target.value.replace(/\D/g, '');
+      if(valor){ confirmacaoPINDigitado += valor; if(index < 3) document.querySelectorAll('.pin-digit-confirmacao')[index+1].focus(); if(confirmacaoPINDigitado.length === 4) salvarNovoPIN(); }
+    });
+    input.addEventListener('keydown', (e) => { if(e.key === 'Backspace' && !e.target.value && index > 0){ confirmacaoPINDigitado = confirmacaoPINDigitado.slice(0, -1); document.querySelectorAll('.pin-digit-confirmacao')[index-1].focus(); } });
+  });
+}
+function atualizarIndicadorForcaPIN(){
+  const indicator = document.getElementById('novoPINStrength');
+  if(novoPINDigitado.length < 4){ indicator.textContent = `${novoPINDigitado.length}/4 dígitos`; indicator.style.color = 'var(--text-gray)'; return; }
+  const digitsUnicos = new Set(novoPINDigitado.split('')).size;
+  const sequencial = /^(0123|1234|2345|3456|4567|5678|6789|9876|8765|7654|6543|5432|4321|3210|1111|2222|3333|4444|5555|6666|7777|8888|9999|0000)$/.test(novoPINDigitado);
+  if(sequencial || digitsUnicos === 1){ indicator.textContent = '⚠️ PIN fraco - evite sequências ou repetições'; indicator.style.color = 'var(--danger-red)'; } 
+  else if(digitsUnicos <= 2){ indicator.textContent = '🟡 PIN moderado - considere mais variedade'; indicator.style.color = 'var(--warning-orange)'; } 
+  else { indicator.textContent = '✅ PIN forte!'; indicator.style.color = 'var(--success-green)'; }
+}
+function confirmarPINAtual(){
+  const pinSalvo = localStorage.getItem(CONFIG.STORAGE_PIN_KEY) || CONFIG.PIN_PADRAO;
+  const errorEl = document.getElementById('errorConfirmarPIN');
+  if(pinAtualDigitado === pinSalvo){
+    errorEl.textContent = '';
+    document.getElementById('stepAtual').style.display = 'none';
+    document.getElementById('stepNovoPIN').style.display = 'block';
+    document.getElementById('btnVoltarStep').style.display = 'inline-flex';
+    stepAtual = 2;
+    setTimeout(() => { document.querySelector('.pin-digit-novo[data-index="0"]').focus(); }, 100);
+  } else {
+    errorEl.textContent = '❌ PIN atual incorreto. Tente novamente.';
+    pinAtualDigitado = '';
+    document.querySelectorAll('.pin-digit-confirm').forEach(input => input.value = '');
+    document.querySelector('.pin-digit-confirm[data-index="0"]').focus();
+    showToast('🔒 PIN atual inválido', 'error');
+  }
+}
+function avançarParaConfirmacao(){
+  if(novoPINDigitado.length !== 4){ showToast('⚠️ Digite os 4 dígitos do novo PIN', 'warning'); return; }
+  if(!/^\d{4}$/.test(novoPINDigitado)){ showToast('❌ PIN deve conter apenas 4 números', 'error'); return; }
+  document.getElementById('stepNovoPIN').style.display = 'none';
+  document.getElementById('stepConfirmarNovo').style.display = 'block';
+  stepAtual = 3;
+  setTimeout(() => { document.querySelector('.pin-digit-confirmacao[data-index="0"]').focus(); }, 100);
+}
+function salvarNovoPIN(){
+  const errorEl = document.getElementById('errorConfirmarNovo');
+  if(confirmacaoPINDigitado.length !== 4){ errorEl.textContent = '❌ Confirme os 4 dígitos do novo PIN'; return; }
+  if(novoPINDigitado !== confirmacaoPINDigitado){
+    errorEl.textContent = '❌ Os PINs não conferem. Tente novamente.';
+    confirmacaoPINDigitado = '';
+    document.querySelectorAll('.pin-digit-confirmacao').forEach(input => input.value = '');
+    document.querySelector('.pin-digit-confirmacao[data-index="0"]').focus();
+    showToast('⚠️ PINs não coincidem', 'warning');
+    return;
+  }
+  const pinSalvo = localStorage.getItem(CONFIG.STORAGE_PIN_KEY) || CONFIG.PIN_PADRAO;
+  if(novoPINDigitado === pinSalvo){ errorEl.textContent = '⚠️ Novo PIN igual ao atual. Escolha outro.'; showToast('🔄 Escolha um PIN diferente do atual', 'info'); return; }
+  localStorage.setItem(CONFIG.STORAGE_PIN_KEY, novoPINDigitado);
+  fecharModalAlterarPIN();
+  showToast('✅ PIN alterado com sucesso! Use seu novo PIN no próximo acesso.', 'success', 5000);
+  pinAtualDigitado = ""; novoPINDigitado = ""; confirmacaoPINDigitado = ""; stepAtual = 1;
+}
+function voltarStep(){
+  if(stepAtual === 2){
+    document.getElementById('stepNovoPIN').style.display = 'none';
+    document.getElementById('stepAtual').style.display = 'block';
+    document.getElementById('btnVoltarStep').style.display = 'none';
+    stepAtual = 1;
+    novoPINDigitado = '';
+    document.querySelectorAll('.pin-digit-novo').forEach(input => input.value = '');
+    document.querySelector('.pin-digit-confirm[data-index="0"]').focus();
+  } else if(stepAtual === 3){
+    document.getElementById('stepConfirmarNovo').style.display = 'none';
+    document.getElementById('stepNovoPIN').style.display = 'block';
+    stepAtual = 2;
+    confirmacaoPINDigitado = '';
+    document.querySelectorAll('.pin-digit-confirmacao').forEach(input => input.value = '');
+    document.querySelector('.pin-digit-novo[data-index="0"]').focus();
+  }
+}
+
+document.addEventListener('DOMContentLoaded',()=>{ 
+  const hoje=new Date().toISOString().split('T')[0]; 
+  document.getElementById('dataInicio').value=hoje; 
+  document.getElementById('anoAtual').textContent=new Date().getFullYear(); 
+  carregarValorMensalidade(); 
+  carregarTema(); 
+  verificarLogin(); 
+  configurarAtalhosTeclado(); 
+  configurarMascaraWhatsapp(); 
+  configurarInputsPIN(); 
+  configurarInputsAlteracaoPIN();
+  document.getElementById('pesquisaAluno').addEventListener('input',()=>{ 
+    if(pesquisaTimeout) clearTimeout(pesquisaTimeout); 
+    pesquisaTimeout=setTimeout(()=>pesquisarAluno(),300); 
+  }); 
+});
+
+function verificarLogin(){ 
+  const pinSalvo=localStorage.getItem(CONFIG.STORAGE_PIN_KEY); 
+  if(!pinSalvo) localStorage.setItem(CONFIG.STORAGE_PIN_KEY,CONFIG.PIN_PADRAO); 
+  document.getElementById('modalLogin').classList.add('active'); 
+  setTimeout(() => {
+    const firstPin = document.querySelector('.pin-digit[data-index="0"]');
+    if(firstPin) firstPin.focus();
+  }, 300);
+}
+function configurarInputsPIN(){ 
+  const inputs=document.querySelectorAll('.pin-digit'); 
+  inputs.forEach((input,index)=>{ 
+    input.addEventListener('input',(e)=>{ 
+      const valor=e.target.value.replace(/\D/g,''); 
+      if(valor){ pinDigitado+=valor; if(index<inputs.length-1) inputs[index+1].focus(); if(pinDigitado.length===4) verificarPIN(); } 
+    }); 
+    input.addEventListener('keydown',(e)=>{ if(e.key==='Backspace' && !e.target.value && index>0){ pinDigitado=pinDigitado.slice(0,-1); inputs[index-1].focus(); } }); 
+    input.addEventListener('paste',(e)=>{ e.preventDefault(); const paste=(e.clipboardData||window.clipboardData).getData('text'); const numeros=paste.replace(/\D/g,'').slice(0,4); pinDigitado=numeros; numeros.split('').forEach((num,i)=>{ if(inputs[i]) inputs[i].value=num; }); if(numeros.length===4) verificarPIN(); }); 
+  }); 
+}
+function verificarPIN(){ 
+  const pinSalvo=localStorage.getItem(CONFIG.STORAGE_PIN_KEY)||CONFIG.PIN_PADRAO; 
+  const errorEl=document.getElementById('loginError'); 
+  if(pinDigitado===pinSalvo){ 
+    errorEl.textContent=''; 
+    document.getElementById('modalLogin').classList.remove('active'); 
+    document.getElementById('mainDashboard').style.display='block'; 
+    carregarDados(); 
+    renderizarTabela(); 
+    atualizarInfoPesquisa(); 
+    showToast(`${CONFIG.EMOJI} Bem-vindo à ${CONFIG.NOME_ACADEMIA}!`, 'success', 3000); 
+  } else { 
+    errorEl.textContent='❌ PIN incorreto. Tente novamente.'; 
+    pinDigitado=''; 
+    document.querySelectorAll('.pin-digit').forEach(input=>input.value=''); 
+    document.querySelector('.pin-digit[data-index="0"]').focus(); 
+    showToast('🔒 Acesso negado', 'error'); 
+  } 
+}
+function showToast(msg,tipo='info',duracao=3000){ 
+  const c=document.getElementById('toastContainer'); 
+  const t=document.createElement('div'); 
+  const ic={success:'✅',error:'❌',warning:'⚠️',info:'ℹ️'}; 
+  t.className=`toast ${tipo}`; 
+  t.innerHTML=`<span>${ic[tipo]||'ℹ️'}</span><span>${msg}</span>`; 
+  c.appendChild(t); 
+  setTimeout(()=>{ t.style.animation='fadeOut 0.3s ease forwards'; setTimeout(()=>t.remove(),300); },duracao); 
+  t.onclick=()=>t.remove(); 
+}
+function carregarTema(){ 
+  const tema=localStorage.getItem(CONFIG.STORAGE_THEME_KEY); 
+  if(tema) document.documentElement.setAttribute('data-theme',tema); 
+  atualizarBotaoTema(); 
+}
+function alternarTema(){ 
+  const atual=document.documentElement.getAttribute('data-theme')||'dark'; 
+  const novo=atual==='dark'?'light':'dark'; 
+  document.documentElement.setAttribute('data-theme',novo); 
+  localStorage.setItem(CONFIG.STORAGE_THEME_KEY,novo); 
+  showToast(`🌓 Tema ${novo==='dark'?'escuro':'claro'}`, 'info',2000); 
+  atualizarBotaoTema(); 
+}
+function atualizarBotaoTema(){ 
+  const btn=document.getElementById('themeToggle'); 
+  const tema=document.documentElement.getAttribute('data-theme')||'dark'; 
+  btn.textContent=tema==='dark'?'☀️ Claro':'🌙 Escuro'; 
+  btn.onclick=alternarTema; 
+}
+function configurarAtalhosTeclado(){ 
+  document.addEventListener('keydown',(e)=>{ 
+    if(['INPUT','TEXTAREA'].includes(e.target.tagName)) return; 
+    if(e.ctrlKey||e.metaKey){ 
+      switch(e.key.toLowerCase()){ 
+        case 'n': e.preventDefault(); document.getElementById('nomeAluno').focus(); showToast('⌨️ Foco no nome','info',1500); break; 
+        case 'f': e.preventDefault(); document.getElementById('pesquisaAluno').focus(); showToast('⌨️ Foco na pesquisa','info',1500); break; 
+        case 'e': e.preventDefault(); exportarCSV(); break; 
+        case 'b': e.preventDefault(); backupDados(); break; 
+        case 'r': e.preventDefault(); gerarRelatorioMensal(); break; 
+      } 
+    } 
+    if(e.key==='Escape'){ limparPesquisa(); fecharModalEditar(); fecharModalRelatorio(); fecharModalAlterarPIN(); } 
+  }); 
+}
+function configurarMascaraWhatsapp(){ 
+  const aplicar=(input)=>{ let valor=input.value.replace(/\D/g,''); if(valor.length<=10) valor=valor.replace(/(\d{2})(\d)/,'($1) $2').replace(/(\d{5})(\d)/,'$1-$2'); else valor=valor.replace(/(\d{2})(\d)/,'($1) $2').replace(/(\d{5})(\d)/,'$1-$2'); input.value=valor.slice(0,15); }; 
+  ['whatsappAluno','editWhatsapp'].forEach(id=>{ const i=document.getElementById(id); if(i){ i.addEventListener('input',()=>aplicar(i)); i.addEventListener('blur',()=>{ i.dataset.raw=i.value.replace(/\D/g,''); }); } }); 
+}
+
+// Exportar funções para o escopo global
+window.adicionarAluno=adicionarAluno; window.exportarCSV=exportarCSV; window.removerAluno=removerAluno; 
+window.enviarCobrancaWhatsApp=enviarCobrancaWhatsApp; window.editarAluno=editarAluno; window.fecharModalEditar=fecharModalEditar; 
+window.salvarEdicao=salvarEdicao; window.togglePagamento=togglePagamento; window.atualizarDataPagamento=atualizarDataPagamento; 
+window.pesquisarAluno=pesquisarAluno; window.limparPesquisa=limparPesquisa; window.aplicarFiltroStatus=aplicarFiltroStatus; 
+window.atualizarValorMensalidade=atualizarValorMensalidade; window.backupDados=backupDados; window.restaurarDados=restaurarDados; 
+window.verificarPIN=verificarPIN; window.redefinirPIN=redefinirPIN; window.alternarTema=alternarTema; 
+window.gerarRelatorioMensal=gerarRelatorioMensal; window.fecharModalRelatorio=fecharModalRelatorio; 
+window.exportarPDF=exportarPDF; window.marcarTodosPagos=marcarTodosPagos; window.cobrarPendentes=cobrarPendentes; 
+window.atualizarRelatorioPorPeriodo=atualizarRelatorioPorPeriodo; window.fecharModalAlterarPIN=fecharModalAlterarPIN;
+window.confirmarPINAtual=confirmarPINAtual; window.avançarParaConfirmacao=avançarParaConfirmacao;
+window.salvarNovoPIN=salvarNovoPIN; window.voltarStep=voltarStep;
+atualizarBotaoTema();
+</script>
+</body>
+</html>
