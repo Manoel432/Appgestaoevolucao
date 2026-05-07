@@ -1452,19 +1452,13 @@ function enviarCobrancaWhatsApp(idx){
   
   const msgCodificada = encodeURIComponent(msg);
   const numeroLimpo = num.replace(/\s/g, '');
-  const linkWhatsApp = `https://wa.me/${numeroLimpo}?text=${msgCodificada}`;
   
-  // 1. Tenta enviar para o Kodular (se os blocos estiverem certos)
-  if (typeof window.AppInventor !== 'undefined') {
-    window.AppInventor.setWebViewString(linkWhatsApp);
-  }
+  // MODO NINJA: Usa o protocolo nativo do Android (intent://) para forçar a abertura do WhatsApp
+  // Isso ignora completamente o bloqueio do WebViewer do Kodular
+  const linkIntent = `intent://send/${numeroLimpo}?text=${msgCodificada}#Intent;scheme=whatsapp;package=com.whatsapp;action=android.intent.action.SEND;end;`;
   
-  // 2. MÉTODO INFALÍVEL: Pergunta para o usuário se ele quer abrir
-  // Isso ignora o bloqueio do aplicativo e força o celular a abrir o WhatsApp
-  if (confirm("Deseja abrir o WhatsApp agora para enviar a cobrança?")) {
-    // Muda o location da página inteira. O Android vai reconhecer o wa.me e perguntar qual app abrir
-    window.location.href = linkWhatsApp;
-  }
+  // Tenta abrir direto no sistema
+  window.location.href = linkIntent;
 }
 
 function marcarTodosPagos(mes){ if(!confirm(`✅ Marcar TODOS os ${alunos.length} alunos como PAGOS em ${CONFIG.MESES[mes]}?`)) return; let cont=0; alunos.forEach(aluno=>{ if(!aluno.meses[mes].pago){ aluno.meses[mes].pago=true; cont++; } }); salvar(); renderizarTabela(); showToast(`🎉 ${cont} aluno(s) pagos em ${CONFIG.MESES_CURTOS[mes]}!`, 'success'); }
