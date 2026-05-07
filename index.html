@@ -1444,6 +1444,7 @@ function enviarCobrancaWhatsApp(idx){
     ? "🔔 Identificamos em nosso sistema que sua mensalidade ainda não foi quitada. Pedimos, por gentileza, que realize o pagamento até a data de vencimento." 
     : "✅ Agradecemos o pagamento!"; 
   
+  // Mensagem atualizada com os dados da Academia Evolução do Corpo
   let msg = `🏋️ *ACADEMIA EVOLUÇÃO DO CORPO*\n\nOlá, *${aluno.nome}*! Tudo bem? 💪\n\n📆 *Referente à mensalidade de ${mesNome}/${anoAtual}*\n💰 *Valor:* R$ ${valorMensalidade.toFixed(2).replace('.',',')}\n📊 *Status:* ${statusTexto}`; 
   
   if(!pago && dataPag) msg += `\n📅 *Vencimento:* ${dataPag}`; 
@@ -1452,13 +1453,16 @@ function enviarCobrancaWhatsApp(idx){
   
   const msgCodificada = encodeURIComponent(msg);
   const numeroLimpo = num.replace(/\s/g, '');
+  const linkWhatsApp = `https://wa.me/${numeroLimpo}?text=${msgCodificada}`;
   
-  // MODO NINJA: Usa o protocolo nativo do Android (intent://) para forçar a abertura do WhatsApp
-  // Isso ignora completamente o bloqueio do WebViewer do Kodular
-  const linkIntent = `intent://send/${numeroLimpo}?text=${msgCodificada}#Intent;scheme=whatsapp;package=com.whatsapp;action=android.intent.action.SEND;end;`;
-  
-  // Tenta abrir direto no sistema
-  window.location.href = linkIntent;
+  // ENVIANDO O LINK PARA O KODULAR ATRAVÉS DO WebViewString
+  if (typeof window.AppInventor !== 'undefined') {
+    window.AppInventor.setWebViewString(linkWhatsApp);
+    showToast(`💬 Abrindo WhatsApp...`, 'info', 2000);
+  } else {
+    // Se for aberto pelo link do GitHub (navegador normal), abre direto
+    window.open(linkWhatsApp, '_blank'); 
+  }
 }
 
 function marcarTodosPagos(mes){ if(!confirm(`✅ Marcar TODOS os ${alunos.length} alunos como PAGOS em ${CONFIG.MESES[mes]}?`)) return; let cont=0; alunos.forEach(aluno=>{ if(!aluno.meses[mes].pago){ aluno.meses[mes].pago=true; cont++; } }); salvar(); renderizarTabela(); showToast(`🎉 ${cont} aluno(s) pagos em ${CONFIG.MESES_CURTOS[mes]}!`, 'success'); }
