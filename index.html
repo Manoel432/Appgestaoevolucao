@@ -1417,7 +1417,36 @@ function togglePagamento(idx, mes){ const aluno=alunos[idx]; aluno.meses[mes].pa
 function atualizarDataPagamento(idx, mes, valor){ salvarDataPagamento(alunos[idx], mes, valor); salvar(); renderizarTabela(); }
 
 function enviarCobrancaWhatsApp(idx){ 
+  const aluno = alunos[idx]; 
+  if(!aluno.whatsapp){ showToast(`⚠️ ${aluno.nome} sem WhatsApp!`, 'warning'); return; } 
+  let num = aluno.whatsapp.replace(/\D/g,''); 
+  if(!num.startsWith('55')) num = '55' + num; 
+  if(num.length < 12 || num.length > 13){ showToast('❌ Número inválido! Use: DDD + 9 dígitos (ex: 11912345678)', 'error'); return; } 
+  const mesAtual = new Date().getMonth(); 
+  const anoAtual = new Date().getFullYear(); 
+  const mesNome = CONFIG.MESES[mesAtual]; 
+  const pago = aluno.meses[mesAtual]?.pago; 
+  const dataPag = obterDataPagamentoFormatada(aluno, mesAtual); 
+  const dataInicioFormatada = aluno.dataInicio ? aluno.dataInicio.split('-').reverse().join('/') : "não informada"; 
+  const statusTexto = pago ? "✅ PAGO" : "❌ *Pendente*"; 
+  // NOVA MENSAGEM DE COBRANÇA PERSONALIZADA
+  const aviso = !pago ? "Sua mensalidade ainda não foi registrada como paga. Realize o pagamento para continuar treinando!" : "✅ Agradecemos o pagamento!"; 
+  
+  let msg = `🏋️ *${CONFIG.NOME_ACADEMIA.toUpperCase()}*
 
+Olá, *${aluno.nome}*! Tudo bem? ${CONFIG.EMOJI}
+
+📆 *Referente à mensalidade de ${mesNome}/${anoAtual}*
+💰 *Valor:* R$ ${valorMensalidade.toFixed(2).replace('.',',')}
+📊 *Status:* ${statusTexto}
+`; 
+  if(!pago && dataPag) msg += `📅 *Vencimento:* ${dataPag}\n`; 
+  msg += `\n${aviso}\n\n💳 *Formas de pagamento:*\n• PIX (CNPJ): ${CONFIG.PIX_CHAVE}\n• Dinheiro (diretamente na academia)\n• Transferência bancária (consulte-nos)\n\n✨ Após o pagamento, envie o comprovante para que possamos atualizar seu cadastro.\n\n📅 *Início das atividades:* ${dataInicioFormatada}\n${CONFIG.EMOJI} *${CONFIG.NOME_ACADEMIA} – ${CONFIG.SLOGAN}*`; 
+  
+  const msgCodificada = encodeURIComponent(msg);
+  window.open(`https://wa.me/${num}?text=${msgCodificada}`, '_blank'); 
+  showToast(`💬 Abrindo WhatsApp para ${aluno.nome}...`, 'info', 2000); 
+}
 
 function marcarTodosPagos(mes){ if(!confirm(`✅ Marcar TODOS os ${alunos.length} alunos como PAGOS em ${CONFIG.MESES[mes]}?`)) return; let cont=0; alunos.forEach(aluno=>{ if(!aluno.meses[mes].pago){ aluno.meses[mes].pago=true; cont++; } }); salvar(); renderizarTabela(); showToast(`🎉 ${cont} aluno(s) pagos em ${CONFIG.MESES_CURTOS[mes]}!`, 'success'); }
 function cobrarPendentes(mes){ const pendentes=alunos.filter(a=>!a.meses[mes]?.pago && a.whatsapp); if(pendentes.length===0){ showToast('😊 Nenhum pendente com WhatsApp!', 'info'); return; } if(!confirm(`💬 Enviar cobrança para ${pendentes.length} aluno(s)?`)) return; pendentes.forEach((aluno,i)=>{ setTimeout(()=>{ const idx=alunos.findIndex(a=>a.nome===aluno.nome); if(idx>=0) enviarCobrancaWhatsApp(idx); }, i*1000); }); showToast(`📤 Enviando ${pendentes.length} cobranças...`, 'info', 3000); }
@@ -1550,76 +1579,6 @@ function voltarStep(){
     document.querySelectorAll('.pin-digit-confirmacao').forEach(input => input.value = '');
     document.querySelector('.pin-digit-novo[data-index="0"]').focus();
   }
-  }
-  function enviarCobrancaWhatsApp(idx){ 
-  const aluno = alunos[idx]; 
-  
-  if(!aluno.whatsapp){ 
-    showToast(`⚠️ ${aluno.nome} sem WhatsApp!`, 'warning'); 
-    return; 
-  } 
-  
-  const mesAtual = new Date().getMonth(); 
-  const anoAtual = new Date().getFullYear(); 
-  const mesNome = CONFIG.MESES[mesAtual]; 
-  const pago = aluno.meses[mesAtual]?.pago; 
-  const dataPag = obterDataPagamentoFormatada(aluno, mesAtual); 
-  const dataInicioFormatada = aluno.dataInicio ? aluno.dataInicio.split('-').reverse().join('/') : "não informada"; 
-  
-  const statusTexto = pago ? "✅ PAGO" : "❌ *Pendente*"; 
-  const aviso = !pago 
-    ? "🔔 Identificamos em nosso sistema que sua mensalidade ainda não foi quitada. Pedimos, por gentileza, que realize o pagamento até a data de vencimento." 
-    : "✅ Agradecemos o pagamento!"; 
-  
-  // Monta a mensagem (sem os '*' para ficar bonito quando você colar no WhatsApp)
-  let msg = `🏋️ ACADEMIA EVOLUÇÃO DO CORPO\n\nOlá, ${aluno.nome}! Tudo bem? 💪\n\n📆 Referente à mensalidade de ${mesNome}/${anoAtual}\n💰 Valor: R$ ${valorMensalidade.toFixed(2).replace('.',',')}\n📊 Status: ${statusTexto.replace(/\*/g, '')}`; 
-  
-  if(!pago && dataPag) msg += `\n📅 Vencimento: ${dataPag}`; 
-  
-  msg += `\n\n${aviso}\n\n💳 Formas de pagamento:\n• PIX: ${CONFIG.PIX_CHAVE}\n• Dinheiro (diretamente na academia)\n• Transferência bancária (consulte-nos)\n\n✨ Após o pagamento, envie o comprovante para que possamos atualizar seu cadastro.\n\n📅 Início das atividades: ${dataInicioFormatada}\n💪 Academia Evolução do Corpo – Força • Disciplina • Transformação`; 
-
-  // Tenta usar a API moderna de copiar do celular
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(msg).then(() => {
-      showToast(`✅ Mensagem de ${aluno.nome} copiada! Abra o WhatsApp e cole.`, 'success', 5000);
-      
-      // Tenta abrir o WhatsApp na tela principal para facilitar
-      setTimeout(() => {
-        window.open('https://wa.me/', '_blank');
-      }, 500);
-      
-    }).catch(err => {
-      // Se o celular bloquear a API moderna, usa o método antigo (textarea invisível)
-      copiarTextoFallback(msg, aluno.nome);
-    });
-  } else {
-    // Se o navegador for muito antigo, usa o método antigo
-    copiarTextoFallback(msg, aluno.nome);
-  }
-}
-
-// Função auxiliar caso o celular bloqueie o comando de copiar
-function copiarTextoFallback(texto, nomeAluno) {
-  const textarea = document.createElement('textarea');
-  textarea.value = texto;
-  // Estilos para ficar invisível na tela
-  textarea.style.position = 'fixed';
-  textarea.style.left = '-9999px';
-  document.body.appendChild(textarea);
-  textarea.select();
-  try {
-    document.execCommand('copy');
-    showToast(`✅ Mensagem de ${nomeAluno} copiada! Abra o WhatsApp e cole.`, 'success', 5000);
-    
-    // Tenta abrir o WhatsApp na tela principal
-    setTimeout(() => {
-      window.open('https://wa.me/', '_blank');
-    }, 500);
-    
-  } catch (err) {
-    showToast('⚠️ Selecione a mensagem e copie manualmente.', 'warning', 5000);
-  }
-  document.body.removeChild(textarea);
 }
 
 document.addEventListener('DOMContentLoaded',()=>{ 
