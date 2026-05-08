@@ -1425,6 +1425,9 @@ function enviarCobrancaWhatsApp(idx){
     return; 
   } 
   
+  let num = aluno.whatsapp.replace(/\D/g,''); 
+  if(!num.startsWith('55')) num = '55' + num; 
+  
   const mesAtual = new Date().getMonth(); 
   const anoAtual = new Date().getFullYear(); 
   const mesNome = CONFIG.MESES[mesAtual]; 
@@ -1436,32 +1439,32 @@ function enviarCobrancaWhatsApp(idx){
   const aviso = !pago 
     ? "🔔 Identificamos em nosso sistema que sua mensalidade ainda não foi quitada. Pedimos, por gentileza, que realize o pagamento até a data de vencimento." 
     : "✅ Agradecemos o pagamento!"; 
-  
-  // Monta a mensagem (sem os '*' para ficar bonito quando você colar no WhatsApp)
-  let msg = `🏋️ ACADEMIA EVOLUÇÃO DO CORPO\n\nOlá, ${aluno.nome}! Tudo bem? 💪\n\n📆 Referente à mensalidade de ${mesNome}/${anoAtual}\n💰 Valor: R$ ${valorMensalidade.toFixed(2).replace('.',',')}\n📊 Status: ${statusTexto.replace(/\*/g, '')}`; 
-  
-  if(!pago && dataPag) msg += `\n📅 Vencimento: ${dataPag}`; 
-  
-  msg += `\n\n${aviso}\n\n💳 Formas de pagamento:\n• PIX: ${CONFIG.PIX_CHAVE}\n• Dinheiro (diretamente na academia)\n• Transferência bancária (consulte-nos)\n\n✨ Após o pagamento, envie o comprovante para que possamos atualizar seu cadastro.\n\n📅 Início das atividades: ${dataInicioFormatada}\n💪 Academia Evolução do Corpo – Força • Disciplina • Transformação`; 
 
-  // Tenta usar a API moderna de copiar do celular
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(msg).then(() => {
-      showToast(`✅ Mensagem de ${aluno.nome} copiada! Abra o WhatsApp e cole.`, 'success', 5000);
-      
-      // Tenta abrir o WhatsApp na tela principal para facilitar
-      setTimeout(() => {
-        window.open('https://wa.me/', '_blank');
-      }, 500);
-      
-    }).catch(err => {
-      // Se o celular bloquear a API moderna, usa o método antigo (textarea invisível)
-      copiarTextoFallback(msg, aluno.nome);
-    });
-  } else {
-    // Se o navegador for muito antigo, usa o método antigo
-    copiarTextoFallback(msg, aluno.nome);
+  let msg = `🏋️‍♂️ *EVOLUÇÃO DO CORPO – Academia*\n\nOlá, *${aluno.nome}*! Tudo bem?\n\n📆 *Referente à mensalidade de ${mesNome}/${anoAtual}*\n💰 *Valor:* R$ ${valorMensalidade.toFixed(2).replace('.',',')}\n📊 *Status:* ${statusTexto}`; 
+  
+  if(!pago && dataPag) msg += `\n📅 *Vencimento:* ${dataPag}`; 
+  
+  msg += `\n\n${aviso}\n\n💳 *Formas de pagamento:*\n• PIX: [Seu PIX Aqui]\n• Dinheiro (diretamente na academia)\n• Transferência bancária (consulte-nos)\n\n✨ Após o pagamento, envie o comprovante para que possamos atualizar seu cadastro.\n\n📅 *Início das atividades:* ${dataInicioFormatada}\n💪 *Evolução do Corpo – Supere seus limites!*`; 
+
+  // FORÇA APENAS A CÓPIA DENTRO DO APLICATIVO
+  function copiarTexto(texto) {
+    const areaTexto = document.createElement("textarea");
+    areaTexto.value = texto;
+    areaTexto.style.position = "fixed";
+    areaTexto.style.left = "-9999px";
+    document.body.appendChild(areaTexto);
+    areaTexto.select();
+    try {
+      document.execCommand('copy');
+      showToast(`📋 COPIADO! Abra o WhatsApp do aluno e cole.`, 'success', 5000);
+    } catch(e) {
+      showToast(`❌ Falha ao copiar.`, 'error');
+    }
+    document.body.removeChild(areaTexto);
   }
+
+  copiarTexto(msg);
+  return false; // Impede qualquer outra ação do celular
 }
   
 // Função auxiliar caso o celular bloqueie o comando de copiar
