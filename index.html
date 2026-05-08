@@ -1416,7 +1416,6 @@ function salvarEdicao(){ const idx=parseInt(document.getElementById('editIndex')
 function togglePagamento(idx, mes){ const aluno=alunos[idx]; aluno.meses[mes].pago=!aluno.meses[mes].pago; salvar(); renderizarTabela(); showToast(`${aluno.nome} • ${CONFIG.MESES_CURTOS[mes]}: ${aluno.meses[mes].pago ? '✅ Pago' : '⏳ Pendente'}`, aluno.meses[mes].pago ? 'success' : 'info', 2000); }
 function atualizarDataPagamento(idx, mes, valor){ salvarDataPagamento(alunos[idx], mes, valor); salvar(); renderizarTabela(); }
 
-
 function enviarCobrancaWhatsApp(idx){ 
   const aluno = alunos[idx]; 
   
@@ -1437,14 +1436,14 @@ function enviarCobrancaWhatsApp(idx){
   
   const statusTexto = pago ? "✅ PAGO" : "❌ *Pendente*"; 
   const aviso = !pago 
-    ? "🔔 Identificamos em nosso sistema que sua mensalidade ainda não foi quitada. Pedimos, por gentileza, que realize o pagamento até a data de vencimento." 
+    ? "🔔 Identificamos em nosso sistema que sua mensalidade ainda não foi quitada. Pedimos, por gentileza, que realize o pagamento para continuar treinando." 
     : "✅ Agradecemos o pagamento!"; 
 
   let msg = `🏋️‍♂️ *EVOLUÇÃO DO CORPO – Academia*\n\nOlá, *${aluno.nome}*! Tudo bem?\n\n📆 *Referente à mensalidade de ${mesNome}/${anoAtual}*\n💰 *Valor:* R$ ${valorMensalidade.toFixed(2).replace('.',',')}\n📊 *Status:* ${statusTexto}`; 
   
   if(!pago && dataPag) msg += `\n📅 *Vencimento:* ${dataPag}`; 
   
-  msg += `\n\n${aviso}\n\n💳 *Formas de pagamento:*\n• PIX: [Seu PIX Aqui]\n• Dinheiro (diretamente na academia)\n• Transferência bancária (consulte-nos)\n\n✨ Após o pagamento, envie o comprovante para que possamos atualizar seu cadastro.\n\n📅 *Início das atividades:* ${dataInicioFormatada}\n💪 *Evolução do Corpo – Supere seus limites!*`; 
+  msg += `\n\n${aviso}\n\n💳 *Formas de pagamento:*\n• PIX (CNPJ) 16725528000168\n• Dinheiro (diretamente na academia)\n• Transferência bancária (consulte-nos)\n\n✨ Após o pagamento, envie o comprovante para que possamos atualizar seu cadastro.\n\n📅 *Início das atividades:* ${dataInicioFormatada}\n💪 *Evolução do Corpo – Sua melhor versão!*`; 
 
   // FORÇA APENAS A CÓPIA DENTRO DO APLICATIVO
   function copiarTexto(texto) {
@@ -1466,6 +1465,7 @@ function enviarCobrancaWhatsApp(idx){
   copiarTexto(msg);
   return false; // Impede qualquer outra ação do celular
 }
+
   
 // Função auxiliar caso o celular bloqueie o comando de copiar
 function copiarTextoFallback(texto, nomeAluno) {
